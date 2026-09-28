@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Olivetta Restaurant - Reservas y Eventos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+</head>
+<body class="bg-stone-900 text-stone-100 min-h-screen p-4 font-sans select-none">
+
+    <header class="text-center py-6 border-b border-amber-600/30 mb-6">
+        <h1 class="text-4xl font-serif tracking-widest text-amber-500 uppercase">Olivetta</h1>
+        <p class="text-xs text-stone-400 tracking-wider uppercase mt-1">Lechería, Anzoátegui</p>
+    </header>
+
+    <main class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Calendario Táctil -->
+        <section class="lg:col-span-2 bg-stone-800 p-4 rounded-xl border border-stone-700 shadow-2xl">
+            <h2 class="text-xl font-semibold mb-4 text-amber-400">Selecciona Fecha de Evento</h2>
+            <div id="calendar" class="touch-manipulation text-stone-200"></div>
+        </section>
+
+        <!-- Formulario -->
+        <section class="bg-stone-800 p-6 rounded-xl border border-stone-700 shadow-2xl flex flex-col justify-between">
+            <form id="reservaForm" class="space-y-4">
+                <h2 class="text-xl font-semibold text-amber-400 border-b border-stone-700 pb-2">Detalles del Evento</h2>
+                
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Tipo de Evento</label>
+                    <select id="tipo_evento" required class="w-full p-3 bg-stone-900 border border-stone-700 rounded-lg text-stone-100 text-base focus:border-amber-500 focus:outline-none">
+                        <option value="cumpleanos">🎉 Cumpleaños</option>
+                        <option value="bautizo">🕊️ Bautizo</option>
+                        <option value="reunion">💼 Reunión / Corporativo</option>
+                        <option value="otro">🍷 Otro Evento Especial</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Fecha</label>
+                        <input type="date" id="fecha_reserva" required readonly class="w-full p-3 bg-stone-900/50 border border-stone-700 rounded-lg text-amber-400 font-bold text-center">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Hora</label>
+                        <input type="time" id="hora_reserva" required class="w-full p-3 bg-stone-900 border border-stone-700 rounded-lg text-stone-100 text-center focus:border-amber-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Nombre Completo</label>
+                    <input type="text" id="nombre_cliente" required placeholder="Ej. Antonio Abinazar" class="w-full p-3 bg-stone-900 border border-stone-700 rounded-lg text-stone-100 focus:border-amber-500 focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Teléfono</label>
+                        <input type="tel" id="telefono_cliente" required placeholder="0414-XXXXXXX" class="w-full p-3 bg-stone-900 border border-stone-700 rounded-lg text-stone-100 focus:border-amber-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Personas</label>
+                        <input type="number" id="numero_personas" min="1" max="100" value="2" required class="w-full p-3 bg-stone-900 border border-stone-700 rounded-lg text-stone-100 text-center focus:border-amber-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Notas / Requerimientos</label>
+                    <textarea id="notas_especiales" rows="2" placeholder="Decoración especial, ubicación..." class="w-full p-3 bg-stone-900 border border-stone-700 rounded-lg text-stone-100 focus:border-amber-500 focus:outline-none resize-none"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-4 bg-amber-600 hover:bg-amber-500 text-stone-950 font-bold uppercase tracking-wider rounded-lg shadow-lg active:scale-95 transition-transform text-lg">
+                    Agendar Reserva
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <script type="module">
+        import { supabase } from './js/supabase.js';
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const calendarEl = document.getElementById('calendar');
+
+            async function fetchEventos() {
+                const { data, error } = await supabase
+                    .from('reservas')
+                    .select('*')
+                    .neq('estado', 'cancelada');
+
+                if (error) return [];
+
+                return data.map(r => ({
+                    id: r.id,
+                    title: `${r.tipo_evento.toUpperCase()}: ${r.nombre_cliente}`,
+                    start: `${r.fecha_reserva}T${r.hora_reserva}`,
+                    color: r.estado === 'confirmada' ? '#d97706' : '#4b5563'
+                }));
+            }
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'es',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridDay'
+                },
+                selectable: true,
+                dateClick: function(info) {
+                    document.getElementById('fecha_reserva').value = info.dateStr;
+                },
+                events: async function(fetchInfo, successCallback, failureCallback) {
+                    const eventos = await fetchEventos();
+                    successCallback(eventos);
+                }
+            });
+
+            calendar.render();
+
+            document.getElementById('reservaForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const nuevaReserva = {
+                    tipo_evento: document.getElementById('tipo_evento').value,
+                    fecha_reserva: document.getElementById('fecha_reserva').value,
+                    hora_reserva: document.getElementById('hora_reserva').value,
+                    nombre_cliente: document.getElementById('nombre_cliente').value,
+                    telefono_cliente: document.getElementById('telefono_cliente').value,
+                    numero_personas: parseInt(document.getElementById('numero_personas').value),
+                    notas_especiales: document.getElementById('notas_especiales').value
+                };
+
+                const { data, error } = await supabase.from('reservas').insert([nuevaReserva]);
+
+                if (error) {
+                    alert('Error al registrar reserva: ' + error.message);
+                } else {
+                    alert('¡Reserva registrada con éxito en Olivetta!');
+                    document.getElementById('reservaForm').reset();
+                    calendar.refetchEvents();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

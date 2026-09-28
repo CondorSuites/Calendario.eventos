@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olivetta - Panel de Administración</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-stone-950 text-stone-100 min-h-screen p-6">
+
+    <!-- Vista de Autenticación -->
+    <div id="loginView" class="max-w-md mx-auto mt-20 bg-stone-900 border border-stone-800 p-8 rounded-xl shadow-2xl">
+        <h2 class="text-2xl font-serif text-amber-500 text-center mb-6">Olivetta Admin Access</h2>
+        <form id="loginForm" class="space-y-4">
+            <div>
+                <label class="block text-xs uppercase text-stone-400 mb-1">Correo Electrónico</label>
+                <input type="email" id="email" required class="w-full p-3 bg-stone-800 border border-stone-700 rounded text-stone-100">
+            </div>
+            <div>
+                <label class="block text-xs uppercase text-stone-400 mb-1">Contraseña</label>
+                <input type="password" id="password" required class="w-full p-3 bg-stone-800 border border-stone-700 rounded text-stone-100">
+            </div>
+            <button type="submit" class="w-full py-3 bg-amber-600 hover:bg-amber-500 font-bold text-stone-950 uppercase rounded">Iniciar Sesión</button>
+        </form>
+    </div>
+
+    <!-- Panel de Administración -->
+    <div id="adminPanel" class="hidden">
+        <header class="max-w-7xl mx-auto flex justify-between items-center border-b border-stone-800 pb-4 mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-amber-500">Olivetta - Gestor de Eventos</h1>
+                <p class="text-xs text-stone-400">Lechería, Estado Anzoátegui</p>
+            </div>
+            <button id="logoutBtn" class="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded-lg text-sm">Cerrar Sesión</button>
+        </header>
+
+        <main class="max-w-7xl mx-auto">
+            <div class="bg-stone-900 border border-stone-800 rounded-xl overflow-hidden shadow-xl">
+                <table class="w-full text-left text-sm text-stone-300">
+                    <thead class="bg-stone-800 uppercase text-xs text-stone-400 border-b border-stone-700">
+                        <tr>
+                            <th class="p-4">ID</th>
+                            <th class="p-4">Cliente / Teléfono</th>
+                            <th class="p-4">Evento</th>
+                            <th class="p-4">Fecha y Hora</th>
+                            <th class="p-4">Personas</th>
+                            <th class="p-4">Estado</th>
+                            <th class="p-4 text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaReservas" class="divide-y divide-stone-800"></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para Modificar Fecha/Hora -->
+    <div id="modalEditar" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4">
+        <div class="bg-stone-900 border border-stone-700 p-6 rounded-xl max-w-md w-full space-y-4">
+            <h3 class="text-lg font-bold text-amber-400">Modificar Reserva #<span id="modalId"></span></h3>
+            
+            <div>
+                <label class="block text-xs uppercase text-stone-400 mb-1">Nueva Fecha</label>
+                <input type="date" id="editFecha" class="w-full p-2 bg-stone-800 border border-stone-700 rounded text-stone-100">
+            </div>
+
+            <div>
+                <label class="block text-xs uppercase text-stone-400 mb-1">Nueva Hora</label>
+                <input type="time" id="editHora" class="w-full p-2 bg-stone-800 border border-stone-700 rounded text-stone-100">
+            </div>
+
+            <div>
+                <label class="block text-xs uppercase text-stone-400 mb-1">Estado</label>
+                <select id="editEstado" class="w-full p-2 bg-stone-800 border border-stone-700 rounded text-stone-100">
+                    <option value="pendiente">Pendiente</option>
+                    <option value="confirmada">Confirmada</option>
+                    <option value="completada">Completada</option>
+                </select>
+            </div>
+
+            <div class="flex gap-2 pt-2">
+                <button id="btnGuardarModal" class="flex-1 py-2 bg-amber-600 hover:bg-amber-500 font-bold text-stone-950 rounded">Guardar Cambios</button>
+                <button id="btnCerrarModal" class="flex-1 py-2 bg-stone-800 hover:bg-stone-700 text-stone-300 rounded">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './js/supabase.js';
+
+        let reservaActivaId = null;
+
+        // Verificar sesión activa
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) mostrarAdmin();
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) alert('Acceso denegado: ' + error.message);
+            else mostrarAdmin();
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            location.reload();
+        });
+
+        function mostrarAdmin() {
+            document.getElementById('loginView').classList.add('hidden');
+            document.getElementById('adminPanel').classList.remove('hidden');
+            cargarReservas();
+        }
+
+        async function cargarReservas() {
+            const { data, error } = await supabase
+                .from('reservas')
+                .select('*')
+                .order('fecha_reserva', { ascending: true });
+
+            if (error) return;
+
+            const tbody = document.getElementById('tablaReservas');
+            tbody.innerHTML = '';
+
+            data.forEach(item => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-stone-800/50">
+                        <td class="p-4">${item.id}</td>
+                        <td class="p-4">
+                            <div class="font-bold text-stone-100">${item.nombre_cliente}</div>
+                            <div class="text-xs text-stone-500">${item.telefono_cliente}</div>
+                        </td>
+                        <td class="p-4 uppercase text-xs tracking-wider">${item.tipo_evento}</td>
+                        <td class="p-4 font-mono text-amber-400">${item.fecha_reserva} | ${item.hora_reserva}</td>
+                        <td class="p-4">${item.numero_personas}</td>
+                        <td class="p-4">
+                            <span class="px-2 py-1 text-xs rounded font-bold uppercase ${
+                                item.estado === 'confirmada' ? 'bg-amber-900/40 text-amber-400 border border-amber-600/30' : 
+                                item.estado === 'cancelada' ? 'bg-red-900/40 text-red-400 border border-red-600/30' : 
+                                'bg-stone-800 text-stone-400'
+                            }">${item.estado}</span>
+                        </td>
+                        <td class="p-4 text-center space-x-2">
+                            <button onclick="window.abrirEditar(${item.id}, '${item.fecha_reserva}', '${item.hora_reserva}', '${item.estado}')" class="px-3 py-1 bg-amber-600/20 text-amber-400 border border-amber-600/40 rounded hover:bg-amber-600/40">Modificar</button>
+                            <button onclick="window.cancelarReserva(${item.id})" class="px-3 py-1 bg-red-600/20 text-red-400 border border-red-600/40 rounded hover:bg-red-600/40">Cancelar</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.abrirEditar = (id, fecha, hora, estado) => {
+            reservaActivaId = id;
+            document.getElementById('modalId').innerText = id;
+            document.getElementById('editFecha').value = fecha;
+            document.getElementById('editHora').value = hora;
+            document.getElementById('editEstado').value = estado;
+            document.getElementById('modalEditar').classList.remove('hidden');
+        };
+
+        document.getElementById('btnCerrarModal').addEventListener('click', () => {
+            document.getElementById('modalEditar').classList.add('hidden');
+        });
+
+        document.getElementById('btnGuardarModal').addEventListener('click', async () => {
+            const updates = {
+                fecha_reserva: document.getElementById('editFecha').value,
+                hora_reserva: document.getElementById('editHora').value,
+                estado: document.getElementById('editEstado').value
+            };
+
+            const { error } = await supabase.from('reservas').update(updates).eq('id', reservaActivaId);
+
+            if (error) alert('Error al actualizar: ' + error.message);
+            else {
+                document.getElementById('modalEditar').classList.add('hidden');
+                cargarReservas();
+            }
+        });
+
+        window.cancelarReserva = async (id) => {
+            if (confirm('¿Desea cancelar esta reserva?')) {
+                const { error } = await supabase.from('reservas').update({ estado: 'cancelada' }).eq('id', id);
+                if (error) alert('Error: ' + error.message);
+                else cargarReservas();
+            }
+        };
+    </script>
+</body>
+</html>
