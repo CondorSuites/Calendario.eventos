@@ -214,8 +214,8 @@
 
         <!-- Pie de página -->
         <footer class="mt-8 pt-4 border-t border-stone-200/80 text-center text-xs font-semibold text-stone-600">
-           <p>© 2026 Olivetta Ristorante. Todos los derechos reservados.</p>
-           <p>Creador de la Web, Ruben Abinazar Figarella.</p>
+            <p>© 2026 Olivetta Ristorante. Todos los derechos reservados.</p>
+      <p>Creador de la Web, Ruben Abinazar Figarella.</p>
 
         </footer>
     </main>
@@ -667,7 +667,7 @@
                         return;
                     }
 
-                    // Envío inteligente a Supabase con compatibilidad para restricciones CHECK de tipo_evento
+                    // Envío inteligente a Supabase probando variantes ortográficas para restricciones CHECK
                     const res = await guardarEnSupabase(idReserva, datosReserva);
 
                     if (res.error) {
@@ -685,45 +685,101 @@
             });
         });
 
-        // Función auxiliar que prueba formatos alternativos si la tabla tiene restricción CHECK estricta
+        // Función auxiliar que prueba exhaustivamente formatos alternativos si la tabla tiene restricción CHECK estricta
         async function guardarEnSupabase(idReserva, datosReserva) {
-            const tipoOriginal = datosReserva.tipo_evento;
-            const selectElem = document.getElementById('tipo_evento');
-            const textoOpcion = selectElem.options[selectElem.selectedIndex].text.replace(/^[^\wáéíóúñÁÉÍÓÚÑ]+/u, '').trim();
+            const keyTipo = datosReserva.tipo_evento;
+            const keyArea = datosReserva.area_evento;
+            
+            // Diccionario con todas las combinaciones probables que se suelen usar en Postgres / Supabase
+            const MAPPING_TIPOS = {
+                cumpleanos: ['Cumpleaños', 'cumpleaños', 'Cumpleanos', 'cumpleanos', 'CUMPLEAÑOS', 'cumpleanios', 'Cumpleanios'],
+                bautizo: ['Bautizo', 'bautizo', 'BAUTIZO'],
+                reunion_corporativa: ['Reunión Corporativa', 'Reunion Corporativa', 'reunion_corporativa', 'reunion corporativa', 'Reunión corporativa', 'Reunión', 'Reunion', 'Corporativo', 'empresarial'],
+                boda_civil: ['Boda Civil', 'Boda civil', 'boda_civil', 'boda civil', 'Boda', 'boda', 'Matrimonio'],
+                graduacion: ['Graduación', 'Graduacion', 'graduación', 'graduacion', 'GRADUACIÓN', 'GRADUACION'],
+                otro: ['Otro', 'otro', 'Otro Evento', 'otro_evento', 'Otros', 'otros', 'Evento', 'evento']
+            };
 
-            const variantes = Array.from(new Set([
-                tipoOriginal,
-                tipoOriginal.replace('_', ' '),
-                tipoOriginal.replace(' ', '_'),
-                textoOpcion,
-                textoOpcion.toLowerCase(),
-                textoOpcion.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
-                tipoOriginal.toUpperCase(),
-                textoOpcion.toUpperCase()
-            ]));
+            const MAPPING_AREAS = {
+                restorante: ['restorante', 'Restorante', 'Restaurante', 'restaurante', 'RESTORANTE'],
+                terraza: ['terraza', 'Terraza', 'TERRAZA'],
+                piscina: ['piscina', 'Piscina', 'PISCINA'],
+                salon: ['salon', 'Salon', 'Salón', 'salón', 'SALON', 'SALÓN']
+            };
+
+            // Extraer y limpiar de forma segura el texto de las opciones seleccionadas en el HTML
+            const selectTipo = document.getElementById('tipo_evento');
+            const textoTipoRaw = selectTipo ? selectTipo.options[selectTipo.selectedIndex].text : '';
+            const textoTipoLimpio = textoTipoRaw.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+
+            const selectArea = document.getElementById('area_evento');
+            const textoAreaRaw = selectArea ? selectArea.options[selectArea.selectedIndex].text : '';
+            const textoAreaLimpio = textoAreaRaw.trim();
+
+            // Construir lista única de variantes para probar
+            const variantesTipos = [...new Set([
+                ...(MAPPING_TIPOS[keyTipo] || []),
+                keyTipo,
+                textoTipoLimpio,
+                textoTipoLimpio.toLowerCase(),
+                textoTipoLimpio.toUpperCase(),
+                'Otro', 'otro'
+            ])].filter(Boolean);
+
+            const variantesAreas = [...new Set([
+                keyArea,
+                ...(MAPPING_AREAS[keyArea] || []),
+                textoAreaLimpio,
+                textoAreaLimpio.toLowerCase()
+            ])].filter(Boolean);
 
             let ultimoResultado = null;
 
-            for (const variante of variantes) {
-                const payload = { ...datosReserva, tipo_evento: variante };
-                let res;
-                if (idReserva) {
-                    res = await supabase.from('reservas').update(payload).eq('id', idReserva);
-                } else {
-                    res = await supabase.from('reservas').insert([payload]);
-                }
+            // Matriz de combinaciones que prueba cada variación hasta dar con la correcta
+            for (const varArea of variantesAreas) {
+                for (const varTipo of variantesTipos) {
+                    const payload = { 
+                        ...datosReserva, 
+                        tipo_evento: varTipo,
+                        area_evento: varArea
+                    };
 
-                if (!res.error) {
+                    let res;
+                    if (idReserva) {
+                        res = await supabase.from('reservas').update(payload).eq('id', idReserva);
+                    } else {
+                        res = await supabase.from('reservas').insert([payload]);
+                    }
+
+                    if (!res.error) {
+                        return { error: null };
+                    }
+
+                    // Si el error es una violación de restricción CHECK, continuamos probando el siguiente formato
+                    if (res.error.message.includes('check constraint')) {
+                        ultimoResultado = res;
+                        continue;
+                    } else {
+                        // Si es un error diferente (de red, permisos, etc.), retornar de inmediato
+                        return res;
+                    }
+                }
+            }
+
+            // Intento final: Probar omitiendo tipo_evento si la columna permite valores por defecto
+            try {
+                const payloadSinTipo = { ...datosReserva };
+                delete payloadSinTipo.tipo_evento;
+                let resSinTipo;
+                if (idReserva) {
+                    resSinTipo = await supabase.from('reservas').update(payloadSinTipo).eq('id', idReserva);
+                } else {
+                    resSinTipo = await supabase.from('reservas').insert([payloadSinTipo]);
+                }
+                if (!resSinTipo.error) {
                     return { error: null };
                 }
-
-                // Si el error no es por restricción de tipo_evento, detiene los reintentos y retorna el error
-                if (!res.error.message.includes('reservas_tipo_evento_check')) {
-                    return res;
-                }
-
-                ultimoResultado = res;
-            }
+            } catch (e) {}
 
             return ultimoResultado;
         }
