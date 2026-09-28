@@ -3,37 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Olivetta Restaurant - Calendario de Eventos</title>
+    <title>Olivetta Ristorante - Calendario de Eventos</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FullCalendar CDN -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+
     <style>
-        /* Personalización de FullCalendar para el tema Verde Aceituna */
         .fc {
-            --fc-border-color: rgba(255, 255, 255, 0.2);
+            --fc-border-color: rgba(85, 107, 47, 0.2);
             --fc-button-bg-color: #556B2F;
             --fc-button-border-color: #3B4A20;
             --fc-button-hover-bg-color: #3B4A20;
             --fc-button-active-bg-color: #2D3818;
-            --fc-today-bg-color: rgba(85, 107, 47, 0.15);
+            --fc-today-bg-color: rgba(138, 154, 91, 0.18);
         }
         .fc .fc-toolbar-title {
-            color: #1c2810;
-            font-weight: 700;
+            color: #2D3818;
+            font-weight: 800;
+            font-size: 1.2rem !important;
+            text-transform: capitalize;
+        }
+        .fc .fc-button {
+            font-size: 0.85rem !important;
+            font-weight: 600;
+            border-radius: 0.5rem !important;
+            padding: 0.4rem 0.75rem !important;
+        }
+        @media (max-width: 640px) {
+            .fc .fc-toolbar {
+                flex-direction: column;
+                gap: 0.6rem;
+            }
+            .fc .fc-toolbar-title {
+                font-size: 1.05rem !important;
+                text-align: center;
+            }
         }
         .fc-theme-standard td, .fc-theme-standard th {
-            border-color: rgba(0, 0, 0, 0.1) !important;
+            border-color: rgba(85, 107, 47, 0.15) !important;
         }
         .fc-timegrid-slot {
-            height: 2.5em !important;
+            height: 2.8em !important;
+        }
+        .fc-event {
+            border-radius: 6px !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            padding: 2px 4px;
+        }
+
+        /* Estilos específicos para la impresión en papel/PDF */
+        @media print {
+            body * {
+                visibility: hidden !important;
+            }
+            #areaImpresion, #areaImpresion * {
+                visibility: visible !important;
+            }
+            #areaImpresion {
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 10px !important;
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
         }
     </style>
 </head>
-<body class="bg-[#8A9A5B] text-stone-900 min-h-screen p-3 md:p-6 font-sans select-none">
+<body class="bg-[#8A9A5B] text-stone-900 min-h-screen p-3 md:p-6 font-sans select-none antialiased">
 
     <!-- Encabezado con Logo Olivetta y Estado de Conexión -->
-    <header class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 py-4 mb-4 bg-[#708238]/40 p-4 px-6 rounded-2xl border-2 border-white/60 shadow-lg backdrop-blur-md">
+    <header class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 py-4 mb-5 bg-[#708238]/40 p-4 px-6 rounded-2xl border-2 border-white/60 shadow-lg backdrop-blur-md">
         <div class="flex items-center gap-4">
             <!-- Isotipo 'O' con borde blanco -->
             <div class="w-14 h-14 rounded-full border-2 border-white shadow-md overflow-hidden bg-[#556B2F] flex items-center justify-center shrink-0">
@@ -45,191 +92,420 @@
             </div>
         </div>
 
-        <!-- Indicador de Estado y Configuración -->
-        <div class="flex items-center gap-3">
-            <button id="statusBadge" onclick="alternarModoDemo()" title="Haz clic para alternar entre Modo Demo y Supabase" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95">
+        <!-- Indicador de Estado -->
+        <div class="flex items-center gap-2">
+            <button id="statusBadge" onclick="alternarModoDemo()" title="Haz clic para alternar entre Modo Demo y Supabase" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-bold px-3.5 py-2 rounded-full flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95">
                 <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-                <span>Modo Demo Local</span>
+                <span id="statusBadgeText">Modo Demo Local</span>
+            </button>
+            <button onclick="abrirModalConfig()" title="Configurar conexión Supabase" class="bg-white/80 hover:bg-white text-stone-800 p-2 rounded-full border border-stone-300 shadow-sm transition-transform active:scale-95">
+                ⚙️
             </button>
         </div>
     </header>
 
-    <!-- Contenedor del Calendario Táctil -->
-    <main class="max-w-6xl mx-auto">
-        <section class="bg-[#f4f6ef] p-4 md:p-6 rounded-2xl border-2 border-white shadow-2xl">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-                <h2 class="text-lg md:text-xl font-bold text-[#3B4A20] flex items-center gap-2">
-                    📅 Calendario de Reservas y Eventos
-                </h2>
-                <button onclick="abrirModalNuevaReserva()" class="bg-[#556B2F] hover:bg-[#3B4A20] text-white font-bold px-4 py-2.5 rounded-xl shadow-md transition-transform active:scale-95 text-sm flex items-center gap-2 w-full sm:w-auto justify-center">
+    <!-- Contenedor Principal del Calendario -->
+    <main class="max-w-6xl mx-auto bg-white/95 rounded-2xl shadow-2xl p-4 md:p-6 border border-stone-200 backdrop-blur-sm mb-6">
+        <!-- Barra de Acciones Superior -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mb-5 border-b border-stone-200 pb-4">
+            <h2 class="text-lg md:text-xl font-bold text-[#3B4A20] flex items-center gap-2">
+                📅 Calendario de Reservas y Eventos
+            </h2>
+            <div class="flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto">
+                <button onclick="abrirModalListado()" class="flex-1 sm:flex-none px-4 py-2.5 bg-stone-700 hover:bg-stone-900 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
+                    📋 Listado / Imprimir
+                </button>
+                <button onclick="abrirModalNuevaReserva()" class="flex-1 sm:flex-none px-5 py-2.5 bg-[#556B2F] hover:bg-[#3B4A20] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
                     ➕ Agendar Evento
                 </button>
             </div>
+        </div>
 
-            <!-- Calendario FullCalendar (7 AM a 11 PM) -->
-            <div id="calendar" class="touch-manipulation rounded-xl overflow-hidden bg-white/70 p-2 shadow-inner"></div>
-        </section>
+        <!-- Elemento donde FullCalendar renderiza la interfaz -->
+        <div id="calendar" class="min-h-[550px]"></div>
+
+        <!-- Pie de página integrado al contenedor del calendario -->
+        <footer class="mt-8 pt-4 border-t border-stone-200 text-center text-xs font-semibold text-stone-600">
+            © 2026 Olivetta Ristorante, Todos los derechos reservados.
+        </footer>
     </main>
 
-    <!-- Pie de Página / Footer -->
-    <footer class="max-w-6xl mx-auto mt-6 text-center text-xs md:text-sm text-stone-900 font-bold tracking-wide py-3">
-        © 2026 Olivetta Ristorante, Todos los derechos reservados.
-        Creador de la web: Ruben Abinazar Figarella.
-    </footer>
-
-    <!-- Panel Flotante / Modal de Registro y Edición de Eventos -->
-    <div id="modalReserva" class="hidden fixed inset-0 bg-stone-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-[#f9fbf7] border-2 border-[#556B2F] w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden transform transition-all max-h-[90vh] flex flex-col">
-            
-            <!-- Encabezado Modal -->
-            <div class="bg-[#556B2F] text-white p-4 px-6 flex justify-between items-center shrink-0">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full border border-white overflow-hidden bg-white shrink-0">
-                        <img src="logo.olivetta.jpg" alt="Logo" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/50x50/556B2F/ffffff?text=O';">
-                    </div>
-                    <h3 id="modalTitulo" class="font-serif font-bold text-lg">Registrar Evento - Olivetta</h3>
-                </div>
-                <button onclick="cerrarModal()" class="text-white/80 hover:text-white font-bold text-2xl leading-none">&times;</button>
+    <!-- Modal Flotante para Registrar / Editar Evento -->
+    <div id="modalReserva" class="hidden fixed inset-0 bg-stone-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 md:p-4 overflow-y-auto">
+        <div class="bg-[#fcfdfa] border-2 border-[#556B2F] w-full max-w-lg rounded-2xl shadow-2xl p-5 md:p-6 space-y-4 my-auto">
+            <div class="flex justify-between items-center border-b border-stone-200 pb-3">
+                <h3 id="modalTitulo" class="font-bold text-lg text-[#3B4A20] flex items-center gap-2">
+                    📌 Registrar Evento - Olivetta
+                </h3>
+                <button onclick="cerrarModal()" class="text-stone-400 hover:text-stone-700 text-2xl font-bold leading-none">&times;</button>
             </div>
 
-            <!-- Formulario de Registro / Edición -->
-            <form id="reservaForm" class="p-6 space-y-4 overflow-y-auto">
-                <!-- ID Oculto para identificar si es edición -->
-                <input type="hidden" id="reserva_id" value="">
-                
+            <form id="reservaForm" class="space-y-4">
+                <input type="hidden" id="reserva_id">
+
                 <!-- Nombre del Cliente -->
                 <div>
-                    <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Nombre del Cliente</label>
-                    <input type="text" id="nombre_cliente" required placeholder="Ej. Antonio Abinazar" class="w-full p-3 bg-white border border-stone-300 rounded-xl text-stone-900 focus:ring-2 focus:ring-[#556B2F] focus:outline-none">
+                    <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Nombre del Cliente *</label>
+                    <input type="text" id="nombre_cliente" required placeholder="Ej. Antonio Abinazar" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
                 </div>
 
                 <!-- Teléfono del Cliente -->
                 <div>
-                    <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Teléfono de Contacto</label>
-                    <input type="tel" id="telefono_cliente" required placeholder="0414-XXXXXXX" class="w-full p-3 bg-white border border-stone-300 rounded-xl text-stone-900 focus:ring-2 focus:ring-[#556B2F] focus:outline-none">
+                    <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Teléfono de Contacto *</label>
+                    <input type="tel" id="telefono_cliente" required placeholder="Ej. 0414-1234567" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
                 </div>
 
                 <!-- Área del Evento y Cantidad de Personas -->
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Área del Evento</label>
-                        <select id="area_evento" required class="w-full p-3 bg-white border border-stone-300 rounded-xl text-stone-900 font-medium focus:ring-2 focus:ring-[#556B2F] focus:outline-none">
-                            <option value="restorante">🍽️ Restorante</option>
-                            <option value="terraza">🌿 Terraza</option>
-                            <option value="piscina">🏊 Piscina</option>
-                            <option value="salon">🏛️ Salón</option>
+                        <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Área del Evento *</label>
+                        <select id="area_evento" required class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
+                            <option value="restorante">Restorante</option>
+                            <option value="terraza">Terraza</option>
+                            <option value="piscina">Piscina</option>
+                            <option value="salon">Salón</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Cant. Personas</label>
-                        <input type="number" id="numero_personas" min="1" max="200" value="10" required class="w-full p-3 bg-white border border-stone-300 rounded-xl text-stone-900 text-center font-bold focus:ring-2 focus:ring-[#556B2F] focus:outline-none">
+                        <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Cantidad Personas *</label>
+                        <input type="number" id="numero_personas" required min="1" max="300" value="10" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
                     </div>
                 </div>
 
                 <!-- Tipo de Evento -->
                 <div>
-                    <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Tipo de Evento</label>
-                    <select id="tipo_evento" required class="w-full p-3 bg-white border border-stone-300 rounded-xl text-stone-900 font-medium focus:ring-2 focus:ring-[#556B2F] focus:outline-none">
+                    <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Tipo de Evento *</label>
+                    <select id="tipo_evento" required class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
                         <option value="cumpleanos">🎉 Cumpleaños</option>
-                        <option value="bautizo">🕊️ Bautizo</option>
-                        <option value="reunion_corporativa">💼 Reunión Corporativa</option>
-                        <option value="boda_civil">💍 Boda Civil</option>
+                        <option value="bautizo">✝️ Bautizo</option>
+                        <option value="reunion corporativa">💼 Reunión Corporativa</option>
+                        <option value="boda civil">💍 Boda Civil</option>
                         <option value="graduacion">🎓 Graduación</option>
-                        <option value="otro">🍷 Otro Evento</option>
+                        <option value="otro evento">✨ Otro Evento</option>
                     </select>
                 </div>
 
-                <!-- Fecha y Hora (Horario limitado 7:00 AM - 11:00 PM) -->
-                <div class="grid grid-cols-2 gap-3">
+                <!-- Fecha y Hora (De 7 AM a 11 PM) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Fecha</label>
-                        <input type="date" id="fecha_reserva" required class="w-full p-3 bg-white border border-stone-300 rounded-xl text-stone-900 text-center font-bold focus:ring-2 focus:ring-[#556B2F] focus:outline-none">
+                        <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Fecha del Evento *</label>
+                        <input type="date" id="fecha_reserva" required class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Hora (7 AM - 11 PM)</label>
-                        <input type="time" id="hora_reserva" min="07:00" max="23:00" required class="w-full p-3 bg-white border border-stone-300 rounded-xl text-stone-900 text-center font-bold focus:ring-2 focus:ring-[#556B2F] focus:outline-none">
+                        <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Hora (07:00 AM - 11:00 PM) *</label>
+                        <input type="time" id="hora_reserva" required min="07:00" max="23:00" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
                     </div>
                 </div>
 
-                <!-- Botones de Acción -->
-                <div class="flex flex-wrap gap-2 pt-3">
-                    <button type="submit" id="btnGuardarReserva" class="flex-1 py-3.5 bg-[#556B2F] hover:bg-[#3B4A20] text-white font-bold uppercase tracking-wider rounded-xl shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2">
+                <!-- Botones de Acción del Modal -->
+                <div class="flex gap-2 pt-3 border-t border-stone-200">
+                    <button type="submit" id="btnGuardarReserva" class="flex-1 py-3 bg-[#556B2F] hover:bg-[#3B4A20] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95">
                         <span id="txtBtnGuardar">Confirmar Reserva</span>
                     </button>
-                    
-                    <!-- Botón Eliminar (Visible solo en Edición) -->
-                    <button type="button" id="btnEliminarReserva" onclick="eliminarReservaActual()" class="hidden px-4 py-3.5 bg-red-700 hover:bg-red-800 text-white font-bold rounded-xl shadow-md transition-colors flex items-center gap-1.5">
+                    <button type="button" id="btnEliminarReserva" onclick="eliminarReservaActual()" class="hidden px-4 py-3 bg-red-100 hover:bg-red-200 text-red-800 text-xs font-bold uppercase rounded-xl transition-all">
                         🗑️ Eliminar
                     </button>
-
-                    <button type="button" onclick="cerrarModal()" class="px-5 py-3.5 bg-stone-200 hover:bg-stone-300 text-stone-700 font-bold rounded-xl transition-colors">
+                    <button type="button" onclick="cerrarModal()" class="px-4 py-3 bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-bold uppercase rounded-xl transition-all">
                         Cancelar
                     </button>
                 </div>
-
             </form>
         </div>
     </div>
 
-    <!-- Script Supabase & Lógica de la Interfaz -->
+    <!-- Modal Flotante para Listado e Impresión de Reservas -->
+    <div id="modalListado" class="hidden fixed inset-0 bg-stone-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 md:p-5 overflow-y-auto">
+        <div class="bg-white border-2 border-[#556B2F] w-full max-w-4xl rounded-2xl shadow-2xl p-5 md:p-6 space-y-4 my-auto max-h-[90vh] flex flex-col">
+            
+            <!-- Cabecera del Modal (Oculta al imprimir) -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-stone-200 pb-3 no-print">
+                <h3 class="font-bold text-lg text-[#3B4A20] flex items-center gap-2">
+                    📋 Listado de Reservas y Eventos
+                </h3>
+                <button onclick="cerrarModalListado()" class="text-stone-400 hover:text-stone-700 text-2xl font-bold leading-none self-end sm:self-auto">&times;</button>
+            </div>
+
+            <!-- Filtros de Selección de Período (Ocultos al imprimir) -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-stone-100 p-3 rounded-xl border border-stone-200 no-print">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Filtrar Por *</label>
+                    <select id="filtro_periodo_tipo" onchange="cambiarTipoFiltroListado()" class="w-full p-2 bg-white border border-stone-300 rounded-lg text-xs font-semibold text-stone-800 focus:outline-none">
+                        <option value="semana">📅 Semana Actual</option>
+                        <option value="mes_actual">🗓️ Mes Actual</option>
+                        <option value="mes_especifico">🔍 Seleccionar Mes Específico</option>
+                    </select>
+                </div>
+                <div id="contenedorMesEspecifico" class="hidden">
+                    <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Seleccionar Mes/Año *</label>
+                    <input type="month" id="filtro_mes_input" onchange="generarListadoReservas()" class="w-full p-2 bg-white border border-stone-300 rounded-lg text-xs font-semibold text-stone-800 focus:outline-none">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="generarListadoReservas()" class="w-full py-2 bg-[#556B2F] hover:bg-[#3B4A20] text-white text-xs font-bold uppercase rounded-lg shadow transition-all">
+                        🔄 Actualizar Lista
+                    </button>
+                </div>
+            </div>
+
+            <!-- Área Imprimible del Reporte -->
+            <div id="areaImpresion" class="overflow-y-auto flex-1 pr-1 space-y-4">
+                <!-- Membrete de Impresión -->
+                <div class="text-center border-b-2 border-[#556B2F] pb-3">
+                    <h2 class="text-xl font-bold font-serif uppercase tracking-wider text-stone-900">Olivetta Ristorante</h2>
+                    <p class="text-xs font-semibold text-stone-600 uppercase">Lechería, Anzoátegui — Reporte de Reservas</p>
+                    <p id="subtituloPeriodo" class="text-xs font-bold text-[#556B2F] mt-1 bg-stone-100 py-1 px-3 rounded-full inline-block border border-stone-200"></p>
+                </div>
+
+                <!-- Tabla de Eventos -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-[#556B2F] text-white font-bold uppercase tracking-wider">
+                                <th class="p-2 border border-stone-300">Fecha / Hora</th>
+                                <th class="p-2 border border-stone-300">Cliente</th>
+                                <th class="p-2 border border-stone-300">Teléfono</th>
+                                <th class="p-2 border border-stone-300">Área</th>
+                                <th class="p-2 border border-stone-300">Tipo Evento</th>
+                                <th class="p-2 border border-stone-300 text-center">Personas</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaListadoBody" class="divide-y divide-stone-200">
+                            <!-- Filas generadas dinámicamente con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Totales y Firma -->
+                <div class="flex justify-between items-center pt-3 border-t border-stone-300 text-xs font-bold text-stone-800">
+                    <div id="totalEventosText">Total Eventos: 0</div>
+                    <div id="totalPersonasText" class="text-[#556B2F]">Total Personas: 0</div>
+                </div>
+            </div>
+
+            <!-- Botones de Acción Final del Modal (Ocultos al imprimir) -->
+            <div class="flex gap-2 pt-3 border-t border-stone-200 no-print">
+                <button onclick="imprimirListado()" class="flex-1 py-3 bg-[#556B2F] hover:bg-[#3B4A20] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
+                    🖨️ Imprimir / Guardar PDF
+                </button>
+                <button onclick="cerrarModalListado()" class="px-6 py-3 bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-bold uppercase rounded-xl transition-all">
+                    Cerrar
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal de Configuración de Supabase -->
+    <div id="modalConfig" class="hidden fixed inset-0 bg-stone-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-[#f9fbf7] border-2 border-[#556B2F] w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4">
+            <div class="flex justify-between items-center border-b border-stone-200 pb-3">
+                <h3 class="font-bold text-lg text-[#3B4A20]">⚙️ Conexión Sincronizada (Supabase)</h3>
+                <button onclick="cerrarModalConfig()" class="text-stone-500 text-xl font-bold">&times;</button>
+            </div>
+            <p class="text-xs text-stone-600">
+                Para sincronizar el calendario entre todos los celulares y tablets en tiempo real, ingresa las credenciales de tu proyecto Supabase:
+            </p>
+            <div>
+                <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Supabase URL</label>
+                <input type="text" id="cfg_url" placeholder="https://xyz.supabase.co" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-mono">
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Supabase Anon Key</label>
+                <input type="password" id="cfg_key" placeholder="eyJhbGciOi..." class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-mono">
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="guardarConfigSupabase()" class="flex-1 py-3 bg-[#556B2F] hover:bg-[#3B4A20] text-white text-xs font-bold uppercase rounded-xl shadow-md">
+                    Guardar y Sincronizar
+                </button>
+                <button onclick="limpiarConfigSupabase()" class="px-3 py-3 bg-red-100 hover:bg-red-200 text-red-800 text-xs font-bold rounded-xl">
+                    Desconectar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Principal de Lógica de la Interfaz -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-        // Credenciales Fijas de Supabase (Protegidas para evitar alteraciones por el personal)
-        const SUPABASE_URL = localStorage.getItem('OLIVETTA_SUPABASE_URL') || window.SUPABASE_URL || 'https://dvnfvrqdcdyfvgylujpu.supabase.co';
-        const SUPABASE_ANON_KEY = localStorage.getItem('OLIVETTA_SUPABASE_KEY') || window.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2bmZ2cnFkY2R5ZnZneWx1anB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2MDM3OTIsImV4cCI6MjEwNjE3OTc5Mn0.6YwUvCjANuDd_stKo3uxHiFZuWtVYI1E20vxICa80Ic';
-        let FORZAR_MODO_DEMO = localStorage.getItem('OLIVETTA_FORCE_DEMO') === 'true';
+        // =========================================================================
+        // CREDENCIALES FIJAS DE SUPABASE
+        // Coloca aquí tu URL y Anon Key de Supabase para conectar todos los dispositivos
+        // =========================================================================
+        let SUPABASE_URL = 'https://xyz.supabase.co'; // <--- Reemplaza con tu Supabase URL
+        let SUPABASE_ANON_KEY = 'eyJhbGciOi...';      // <--- Reemplaza con tu Supabase Anon Key
+        let FORZAR_MODO_DEMO = false;
 
         let supabase = null;
         let calendar = null;
+        let realtimeChannel = null;
+        let autoRefreshInterval = null;
+        let reservasCache = [];
 
         function initSupabaseClient() {
-            const isConfigured = !FORZAR_MODO_DEMO && SUPABASE_URL && !SUPABASE_URL.includes('tu-proyecto') && SUPABASE_ANON_KEY && !SUPABASE_ANON_KEY.includes('tu-anon-key');
+            const isConfigured = !FORZAR_MODO_DEMO && 
+                                 SUPABASE_URL && 
+                                 SUPABASE_URL.startsWith('http') && 
+                                 !SUPABASE_URL.includes('xyz.supabase.co') && 
+                                 SUPABASE_ANON_KEY && 
+                                 SUPABASE_ANON_KEY.length > 20;
             
             const badge = document.getElementById('statusBadge');
+            const badgeText = document.getElementById('statusBadgeText');
 
             if (isConfigured) {
                 try {
                     supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                     if (badge) {
-                        badge.className = 'bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95';
-                        badge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span><span>Conectado a Supabase</span>`;
+                        badge.className = 'bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 text-xs font-bold px-3.5 py-2 rounded-full flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95';
+                        if (badgeText) badgeText.innerText = 'Sincronizado en Vivo';
                     }
+                    conectarSincronizacionTiempoReal();
                 } catch (e) {
                     console.error('Error al inicializar Supabase:', e);
                     mostrarNotificacion('Error al conectar con Supabase: ' + e.message, true);
                 }
             } else {
                 supabase = null;
+                desconectarSincronizacionTiempoReal();
                 if (badge) {
-                    badge.className = 'bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95';
-                    badge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span><span>Modo Demo Local</span>`;
+                    badge.className = 'bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-bold px-3.5 py-2 rounded-full flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95';
+                    if (badgeText) badgeText.innerText = 'Modo Demo Local';
                 }
             }
         }
 
+        function conectarSincronizacionTiempoReal() {
+            if (!supabase) return;
+
+            if (realtimeChannel) {
+                supabase.removeChannel(realtimeChannel);
+            }
+
+            try {
+                realtimeChannel = supabase
+                    .channel('public:reservas_cambios')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'reservas' }, (payload) => {
+                        console.log('Cambio detectado en BD:', payload);
+                        if (calendar) {
+                            calendar.refetchEvents();
+                            mostrarNotificacion('🔄 Calendario actualizado en vivo');
+                        }
+                    })
+                    .subscribe();
+            } catch (err) {
+                console.warn('Error suscribiendo a tiempo real:', err);
+            }
+
+            if (!autoRefreshInterval) {
+                autoRefreshInterval = setInterval(() => {
+                    if (supabase && calendar) {
+                        calendar.refetchEvents();
+                    }
+                }, 15000);
+            }
+        }
+
+        function desconectarSincronizacionTiempoReal() {
+            if (realtimeChannel && supabase) {
+                supabase.removeChannel(realtimeChannel);
+                realtimeChannel = null;
+            }
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+        }
+
+        window.abrirModalConfig = function() {
+            document.getElementById('cfg_url').value = localStorage.getItem('OLIVETTA_SUPABASE_URL') || '';
+            document.getElementById('cfg_key').value = localStorage.getItem('OLIVETTA_SUPABASE_KEY') || '';
+            document.getElementById('modalConfig').classList.remove('hidden');
+        };
+
+        window.cerrarModalConfig = function() {
+            document.getElementById('modalConfig').classList.add('hidden');
+        };
+
+        window.guardarConfigSupabase = function() {
+            const url = document.getElementById('cfg_url').value.trim();
+            const key = document.getElementById('cfg_key').value.trim();
+
+            if (!url || !key) {
+                mostrarNotificacion('Ingresa una URL y Clave válidas', true);
+                return;
+            }
+
+            localStorage.setItem('OLIVETTA_SUPABASE_URL', url);
+            localStorage.setItem('OLIVETTA_SUPABASE_KEY', key);
+            localStorage.setItem('OLIVETTA_FORCE_DEMO', 'false');
+
+            SUPABASE_URL = url;
+            SUPABASE_ANON_KEY = key;
+            FORZAR_MODO_DEMO = false;
+
+            initSupabaseClient();
+            if (calendar) calendar.refetchEvents();
+            cerrarModalConfig();
+            mostrarNotificacion('Conectado a la base de datos centralizada');
+        };
+
+        window.limpiarConfigSupabase = function() {
+            localStorage.removeItem('OLIVETTA_SUPABASE_URL');
+            localStorage.removeItem('OLIVETTA_SUPABASE_KEY');
+            localStorage.setItem('OLIVETTA_FORCE_DEMO', 'true');
+            SUPABASE_URL = '';
+            SUPABASE_ANON_KEY = '';
+            FORZAR_MODO_DEMO = true;
+            initSupabaseClient();
+            if (calendar) calendar.refetchEvents();
+            cerrarModalConfig();
+            mostrarNotificacion('Modo Demo Local Activado');
+        };
+
         window.alternarModoDemo = function() {
+            if (!localStorage.getItem('OLIVETTA_SUPABASE_URL')) {
+                abrirModalConfig();
+                return;
+            }
             FORZAR_MODO_DEMO = !FORZAR_MODO_DEMO;
             localStorage.setItem('OLIVETTA_FORCE_DEMO', FORZAR_MODO_DEMO ? 'true' : 'false');
             initSupabaseClient();
             if (calendar) {
                 calendar.refetchEvents();
             }
-            mostrarNotificacion(FORZAR_MODO_DEMO ? 'Modo Demo Local activado' : 'Conectando con Supabase...');
+            mostrarNotificacion(FORZAR_MODO_DEMO ? 'Modo Demo Local' : 'Conectando con Supabase...');
         };
 
         document.addEventListener('DOMContentLoaded', function() {
             initSupabaseClient();
 
             const calendarEl = document.getElementById('calendar');
+            if (!calendarEl) {
+                console.error("No se encontró el elemento contenedor '#calendar'");
+                return;
+            }
+
+            const esMovil = window.innerWidth < 640;
 
             calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'timeGridWeek',
+                initialView: esMovil ? 'timeGridDay' : 'timeGridWeek',
                 locale: 'es',
-                slotMinTime: '07:00:00', // 7:00 AM
-                slotMaxTime: '23:00:00', // 11:00 PM
+                slotMinTime: '07:00:00',
+                slotMaxTime: '23:00:00',
                 allDaySlot: false,
-                headerToolbar: {
+                height: 'auto',
+                expandRows: true,
+                buttonText: {
+                    today: 'Hoy',
+                    month: 'Mes',
+                    week: 'Semana',
+                    day: 'Día'
+                },
+                headerToolbar: esMovil ? {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'timeGridDay,timeGridWeek'
+                } : {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
@@ -261,25 +537,24 @@
                 events: async function(fetchInfo, successCallback, failureCallback) {
                     try {
                         if (!supabase) {
-                            // Evento de muestra cuando Supabase no está configurado aún
-                            successCallback([
-                                {
-                                    id: 'demo-1',
-                                    title: 'CUMPLEAÑOS (TERRAZA) - Antonio Abinazar',
-                                    start: `${new Date().toISOString().split('T')[0]}T14:00:00`,
-                                    backgroundColor: '#556B2F',
-                                    borderColor: '#3B4A20',
-                                    extendedProps: {
-                                        nombre_cliente: 'Antonio Abinazar',
-                                        telefono_cliente: '0414-1234567',
-                                        area_evento: 'terraza',
-                                        numero_personas: 15,
-                                        tipo_evento: 'cumpleanos',
-                                        fecha_reserva: new Date().toISOString().split('T')[0],
-                                        hora_reserva: '14:00'
-                                    }
+                            const demoItem = {
+                                id: 'demo-1',
+                                title: '🎉 CUMPLEAÑOS (TERRAZA) - Antonio Abinazar',
+                                start: `${new Date().toISOString().split('T')[0]}T14:00:00`,
+                                backgroundColor: '#556B2F',
+                                borderColor: '#3B4A20',
+                                extendedProps: {
+                                    nombre_cliente: 'Antonio Abinazar',
+                                    telefono_cliente: '0414-1234567',
+                                    area_evento: 'terraza',
+                                    numero_personas: 15,
+                                    tipo_evento: 'cumpleanos',
+                                    fecha_reserva: new Date().toISOString().split('T')[0],
+                                    hora_reserva: '14:00'
                                 }
-                            ]);
+                            };
+                            reservasCache = [demoItem.extendedProps];
+                            successCallback([demoItem]);
                             return;
                         }
 
@@ -295,13 +570,16 @@
                             return;
                         }
 
-                        const eventos = (data || []).map(r => ({
+                        reservasCache = data || [];
+
+                        const eventos = reservasCache.map(r => ({
                             id: String(r.id),
                             title: `${(r.tipo_evento || 'Evento').toUpperCase()} (${(r.area_evento || 'restorante').toUpperCase()}) - ${r.nombre_cliente}`,
                             start: `${r.fecha_reserva}T${r.hora_reserva}`,
                             backgroundColor: '#556B2F',
                             borderColor: '#3B4A20',
                             extendedProps: {
+                                id: r.id,
                                 nombre_cliente: r.nombre_cliente,
                                 telefono_cliente: r.telefono_cliente,
                                 area_evento: r.area_evento,
@@ -343,27 +621,26 @@
                 };
 
                 try {
-                    // Modo sin conexión o Demo
                     if (!supabase) {
                         if (idReserva) {
                             const event = calendar.getEventById(idReserva);
                             if (event) event.remove();
                         }
+                        const newId = idReserva || String(Date.now());
                         calendar.addEvent({
-                            id: idReserva || String(Date.now()),
+                            id: newId,
                             title: `${datosReserva.tipo_evento.toUpperCase()} (${datosReserva.area_evento.toUpperCase()}) - ${datosReserva.nombre_cliente}`,
                             start: `${datosReserva.fecha_reserva}T${datosReserva.hora_reserva}`,
                             backgroundColor: '#556B2F',
                             borderColor: '#3B4A20',
-                            extendedProps: datosReserva
+                            extendedProps: { ...datosReserva, id: newId }
                         });
                         
-                        mostrarNotificacion(idReserva ? '¡Evento actualizado localmente!' : '¡Evento registrado temporalmente!');
+                        mostrarNotificacion(idReserva ? '¡Evento actualizado localmente!' : '¡Evento registrado (Modo Demo Local)!');
                         cerrarModal();
                         return;
                     }
 
-                    // Operación en Supabase (INSERT o UPDATE)
                     let error = null;
                     if (idReserva) {
                         const res = await supabase.from('reservas').update(datosReserva).eq('id', idReserva);
@@ -393,7 +670,7 @@
 
         window.abrirModalNuevaReserva = function() {
             document.getElementById('reserva_id').value = '';
-            document.getElementById('modalTitulo').innerText = 'Registrar Evento - Olivetta';
+            document.getElementById('modalTitulo').innerText = '📌 Registrar Evento - Olivetta';
             document.getElementById('txtBtnGuardar').innerText = 'Confirmar Reserva';
             document.getElementById('btnEliminarReserva').classList.add('hidden');
             document.getElementById('modalReserva').classList.remove('hidden');
@@ -409,7 +686,7 @@
             document.getElementById('fecha_reserva').value = data.fecha_reserva;
             document.getElementById('hora_reserva').value = data.hora_reserva;
 
-            document.getElementById('modalTitulo').innerText = 'Editar / Eliminar Evento';
+            document.getElementById('modalTitulo').innerText = '✏️ Editar / Eliminar Evento';
             document.getElementById('txtBtnGuardar').innerText = 'Guardar Cambios';
             document.getElementById('btnEliminarReserva').classList.remove('hidden');
             document.getElementById('modalReserva').classList.remove('hidden');
@@ -455,6 +732,147 @@
             document.getElementById('reserva_id').value = '';
         };
 
+        window.abrirModalListado = function() {
+            document.getElementById('modalListado').classList.remove('hidden');
+            // Inicializar campo mes_input con el mes actual
+            const hoy = new Date();
+            const yyyy = hoy.getFullYear();
+            const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+            document.getElementById('filtro_mes_input').value = `${yyyy}-${mm}`;
+            
+            generarListadoReservas();
+        };
+
+        window.cerrarModalListado = function() {
+            document.getElementById('modalListado').classList.add('hidden');
+        };
+
+        window.cambiarTipoFiltroListado = function() {
+            const tipo = document.getElementById('filtro_periodo_tipo').value;
+            const contenedorMes = document.getElementById('contenedorMesEspecifico');
+            if (tipo === 'mes_especifico') {
+                contenedorMes.classList.remove('hidden');
+            } else {
+                contenedorMes.classList.add('hidden');
+            }
+            generarListadoReservas();
+        };
+
+        window.generarListadoReservas = function() {
+            const tipoFiltro = document.getElementById('filtro_periodo_tipo').value;
+            const tablaBody = document.getElementById('tablaListadoBody');
+            const subtitulo = document.getElementById('subtituloPeriodo');
+            
+            let listaFiltrada = [];
+            const hoy = new Date();
+
+            if (tipoFiltro === 'semana') {
+                // Obtener rango de la semana actual (Lunes a Domingo)
+                const diaSemana = hoy.getDay(); // 0 dom, 1 lun, ...
+                const diffLunes = hoy.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1);
+                
+                const inicioSemana = new Date(hoy.setDate(diffLunes));
+                inicioSemana.setHours(0,0,0,0);
+                
+                const finSemana = new Date(inicioSemana);
+                finSemana.setDate(inicioSemana.getDate() + 6);
+                finSemana.setHours(23,59,59,999);
+
+                subtitulo.innerText = `SEMANA: ${formatearFechaCorta(inicioSemana)} AL ${formatearFechaCorta(finSemana)}`;
+
+                listaFiltrada = reservasCache.filter(r => {
+                    if (!r.fecha_reserva) return false;
+                    const f = new Date(r.fecha_reserva + 'T00:00:00');
+                    return f >= inicioSemana && f <= finSemana;
+                });
+
+            } else if (tipoFiltro === 'mes_actual') {
+                const yyyy = hoy.getFullYear();
+                const mm = hoy.getMonth();
+                
+                subtitulo.innerText = `MES ACTUAL: ${obtenerNombreMes(mm).toUpperCase()} ${yyyy}`;
+
+                listaFiltrada = reservasCache.filter(r => {
+                    if (!r.fecha_reserva) return false;
+                    const f = new Date(r.fecha_reserva + 'T00:00:00');
+                    return f.getFullYear() === yyyy && f.getMonth() === mm;
+                });
+
+            } else if (tipoFiltro === 'mes_especifico') {
+                const val = document.getElementById('filtro_mes_input').value; // YYYY-MM
+                if (!val) return;
+                const partes = val.split('-');
+                const yyyy = parseInt(partes[0]);
+                const mm = parseInt(partes[1]) - 1;
+
+                subtitulo.innerText = `PERÍODO: ${obtenerNombreMes(mm).toUpperCase()} ${yyyy}`;
+
+                listaFiltrada = reservasCache.filter(r => {
+                    if (!r.fecha_reserva) return false;
+                    const f = new Date(r.fecha_reserva + 'T00:00:00');
+                    return f.getFullYear() === yyyy && f.getMonth() === mm;
+                });
+            }
+
+            // Ordenar por fecha y hora
+            listaFiltrada.sort((a, b) => {
+                const fechaA = `${a.fecha_reserva}T${a.hora_reserva}`;
+                const fechaB = `${b.fecha_reserva}T${b.hora_reserva}`;
+                return fechaA.localeCompare(fechaB);
+            });
+
+            // Renderizar Filas
+            tablaBody.innerHTML = '';
+            let totalPersonas = 0;
+
+            if (listaFiltrada.length === 0) {
+                tablaBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-4 text-center text-stone-500 font-semibold italic">
+                            No hay reservas o eventos registrados para este período.
+                        </td>
+                    </tr>
+                `;
+            } else {
+                listaFiltrada.forEach(r => {
+                    totalPersonas += parseInt(r.numero_personas || 0);
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-stone-50 border-b border-stone-200';
+                    row.innerHTML = `
+                        <td class="p-2 font-bold text-stone-900 border border-stone-200">${r.fecha_reserva} <span class="text-[#556B2F] font-semibold">(${r.hora_reserva})</span></td>
+                        <td class="p-2 font-semibold text-stone-800 border border-stone-200">${r.nombre_cliente}</td>
+                        <td class="p-2 text-stone-700 border border-stone-200">${r.telefono_cliente}</td>
+                        <td class="p-2 capitalize border border-stone-200">${r.area_evento || 'Restorante'}</td>
+                        <td class="p-2 capitalize border border-stone-200">${(r.tipo_evento || 'Evento').replace('_', ' ')}</td>
+                        <td class="p-2 text-center font-bold text-[#556B2F] border border-stone-200">${r.numero_personas}</td>
+                    `;
+                    tablaBody.appendChild(row);
+                });
+            }
+
+            document.getElementById('totalEventosText').innerText = `Total Eventos: ${listaFiltrada.length}`;
+            document.getElementById('totalPersonasText').innerText = `Total Personas: ${totalPersonas}`;
+        };
+
+        window.imprimirListado = function() {
+            window.print();
+        };
+
+        function formatearFechaCorta(fecha) {
+            const dd = String(fecha.getDate()).padStart(2, '0');
+            const mm = String(fecha.getMonth() + 1).padStart(2, '0');
+            const yyyy = fecha.getFullYear();
+            return `${dd}/${mm}/${yyyy}`;
+        }
+
+        function obtenerNombreMes(numeroMes) {
+            const meses = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            return meses[numeroMes] || '';
+        }
+
         function mostrarNotificacion(mensaje, esError = false) {
             const toast = document.createElement('div');
             toast.className = `fixed bottom-5 right-5 z-50 text-white font-bold px-5 py-3 rounded-xl shadow-2xl transition-all duration-300 max-w-sm ${
@@ -462,7 +880,7 @@
             }`;
             toast.innerText = mensaje;
             document.body.appendChild(toast);
-            setTimeout(() => toast.remove(), 4500);
+            setTimeout(() => toast.remove(), 4000);
         }
     </script>
 </body>
