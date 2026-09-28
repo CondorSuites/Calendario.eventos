@@ -30,6 +30,12 @@
             border-radius: 0.5rem !important;
             padding: 0.4rem 0.75rem !important;
         }
+        .fc-timegrid-slot-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #3B4A20;
+            text-transform: lowercase;
+        }
         @media (max-width: 640px) {
             .fc .fc-toolbar {
                 flex-direction: column;
@@ -44,13 +50,38 @@
             border-color: rgba(85, 107, 47, 0.15) !important;
         }
         .fc-timegrid-slot {
-            height: 2.8em !important;
+            height: 3.2em !important;
         }
+        
+        /* Estilos optimizados para superposición de eventos */
         .fc-event {
             border-radius: 6px !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
             cursor: pointer;
-            padding: 2px 4px;
+            padding: 2px 4px !important;
+            font-weight: 600;
+            font-size: 0.75rem !important;
+            line-height: 1.15 !important;
+            overflow: hidden !important;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .fc-event:hover {
+            transform: scale(1.02);
+            z-index: 10 !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+        }
+        .fc-event-main {
+            padding: 1px 2px !important;
+            overflow: hidden;
+            word-break: break-word;
+        }
+        .fc-timegrid-event {
+            min-height: 22px !important;
+        }
+        .fc-timegrid-event .fc-event-main {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
         }
 
         /* Estilos específicos para la impresión en papel/PDF */
@@ -123,8 +154,7 @@
 
         <!-- Pie de página integrado al contenedor del calendario -->
         <footer class="mt-8 pt-4 border-t border-stone-200 text-center text-xs font-semibold text-stone-600">
-            <p>© 2026 Olivetta Ristorante. Todos los derechos reservados.</p>
-      <p>Creador de la Web, Ruben Abinazar Figarella.</p>
+            © 2026 Olivetta Ristorante, Todos los derechos reservados.
         </footer>
     </main>
 
@@ -300,8 +330,8 @@
         // CREDENCIALES FIJAS DE SUPABASE
         // Ingresa aquí tu URL y Anon Key de Supabase directamente en el código
         // =========================================================================
-        const SUPABASE_URL = 'https://dvnfvrqdcdyfvgylujpu.supabase.co'; // <--- Reemplaza con tu Supabase URL
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2bmZ2cnFkY2R5ZnZneWx1anB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2MDM3OTIsImV4cCI6MjEwNjE3OTc5Mn0.6YwUvCjANuDd_stKo3uxHiFZuWtVYI1E20vxICa80Ic';      // <--- Reemplaza con tu Supabase Anon Key
+        const SUPABASE_URL = 'https://xyz.supabase.co'; // <--- Reemplaza con tu Supabase URL
+        const SUPABASE_ANON_KEY = 'eyJhbGciOi...';      // <--- Reemplaza con tu Supabase Anon Key
 
         let supabase = null;
         let calendar = null;
@@ -395,16 +425,35 @@
                 return;
             }
 
-            const esMovil = window.innerWidth < 640;
-
             calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: esMovil ? 'timeGridDay' : 'timeGridWeek',
+                initialView: 'timeGridWeek',
                 locale: 'es',
                 slotMinTime: '07:00:00',
                 slotMaxTime: '23:00:00',
+                slotDuration: '01:00:00',
+                
+                // Muestra eventos simultáneos lado a lado sin romper el diseño
+                slotEventOverlap: true,
+                // Limita los eventos mostrados en la vista mensual antes del enlace "+ más"
+                dayMaxEvents: true,
+                
+                // Formato de horas de 12 Horas (7 am, 2 pm, etc.)
+                slotLabelFormat: {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    meridiem: 'short',
+                    hour12: true
+                },
+                eventTimeFormat: {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    meridiem: 'short',
+                    hour12: true
+                },
                 allDaySlot: false,
                 height: 'auto',
                 expandRows: true,
+                defaultTimedEventDuration: '02:00:00',
                 buttonText: {
                     today: 'Hoy',
                     month: 'Mes',
@@ -443,10 +492,11 @@
                 events: async function(fetchInfo, successCallback, failureCallback) {
                     try {
                         if (!supabase) {
+                            const demoFecha = new Date().toISOString().split('T')[0];
                             const demoItem = {
                                 id: 'demo-1',
                                 title: '🎉 CUMPLEAÑOS (TERRAZA) - Antonio Abinazar',
-                                start: `${new Date().toISOString().split('T')[0]}T14:00:00`,
+                                start: `${demoFecha}T14:00:00`,
                                 backgroundColor: '#556B2F',
                                 borderColor: '#3B4A20',
                                 extendedProps: {
@@ -455,7 +505,7 @@
                                     area_evento: 'terraza',
                                     numero_personas: 15,
                                     tipo_evento: 'cumpleanos',
-                                    fecha_reserva: new Date().toISOString().split('T')[0],
+                                    fecha_reserva: demoFecha,
                                     hora_reserva: '14:00'
                                 }
                             };
@@ -479,19 +529,25 @@
                         reservasCache = (data || []).filter(r => r.estado !== 'cancelada');
 
                         const eventos = reservasCache.map(r => {
-                            // Compatibilidad con modificaciones en nombres de columnas de la BD
+                            // Compatibilidad con variaciones en nombres de columnas de la BD
                             const nombre = r.nombre_cliente || r.nombre || r.cliente || 'Cliente';
                             const telefono = r.telefono_cliente || r.telefono || '';
                             const area = r.area_evento || r.area || 'restorante';
                             const personas = r.numero_personas || r.personas || r.pax || 1;
                             const tipo = r.tipo_evento || r.tipo || 'evento';
                             const fecha = r.fecha_reserva || r.fecha || (r.created_at ? r.created_at.split('T')[0] : new Date().toISOString().split('T')[0]);
-                            const hora = r.hora_reserva || r.hora || '12:00';
+                            
+                            // Sanitización rigurosa de la hora a formato HH:mm para ISO string válido
+                            let rawHora = String(r.hora_reserva || r.hora || '12:00').trim();
+                            if (rawHora.length >= 5) {
+                                rawHora = rawHora.substring(0, 5); // ej. "14:00:00" -> "14:00"
+                            }
+                            const startIso = `${fecha}T${rawHora}:00`;
 
                             return {
                                 id: String(r.id),
                                 title: `${tipo.toUpperCase()} (${area.toUpperCase()}) - ${nombre}`,
-                                start: `${fecha}T${hora.length === 5 ? hora : hora + ':00'}`,
+                                start: startIso,
                                 backgroundColor: '#556B2F',
                                 borderColor: '#3B4A20',
                                 extendedProps: {
@@ -503,7 +559,7 @@
                                     numero_personas: personas,
                                     tipo_evento: tipo,
                                     fecha_reserva: fecha,
-                                    hora_reserva: hora
+                                    hora_reserva: rawHora
                                 }
                             };
                         });
@@ -548,7 +604,7 @@
                         calendar.addEvent({
                             id: newId,
                             title: `${datosReserva.tipo_evento.toUpperCase()} (${datosReserva.area_evento.toUpperCase()}) - ${datosReserva.nombre_cliente}`,
-                            start: `${datosReserva.fecha_reserva}T${datosReserva.hora_reserva}`,
+                            start: `${datosReserva.fecha_reserva}T${datosReserva.hora_reserva}:00`,
                             backgroundColor: '#556B2F',
                             borderColor: '#3B4A20',
                             extendedProps: { ...datosReserva, id: newId }
