@@ -342,6 +342,14 @@
         let reservasCache = [];
 
         function initSupabaseClient() {
+            const savedUrl = localStorage.getItem('OLIVETTA_SUPABASE_URL');
+            const savedKey = localStorage.getItem('OLIVETTA_SUPABASE_KEY');
+            const savedDemo = localStorage.getItem('OLIVETTA_FORCE_DEMO');
+
+            if (savedUrl) SUPABASE_URL = savedUrl;
+            if (savedKey) SUPABASE_ANON_KEY = savedKey;
+            if (savedDemo !== null) FORZAR_MODO_DEMO = savedDemo === 'true';
+
             const isConfigured = !FORZAR_MODO_DEMO && 
                                  SUPABASE_URL && 
                                  SUPABASE_URL.startsWith('http') && 
@@ -560,8 +568,7 @@
 
                         const { data, error } = await supabase
                             .from('reservas')
-                            .select('*')
-                            .neq('estado', 'cancelada');
+                            .select('*');
 
                         if (error) {
                             console.error('Error al consultar reservas:', error);
@@ -570,25 +577,38 @@
                             return;
                         }
 
-                        reservasCache = data || [];
+                        // Filtrar eventos no cancelados
+                        reservasCache = (data || []).filter(r => r.estado !== 'cancelada');
 
-                        const eventos = reservasCache.map(r => ({
-                            id: String(r.id),
-                            title: `${(r.tipo_evento || 'Evento').toUpperCase()} (${(r.area_evento || 'restorante').toUpperCase()}) - ${r.nombre_cliente}`,
-                            start: `${r.fecha_reserva}T${r.hora_reserva}`,
-                            backgroundColor: '#556B2F',
-                            borderColor: '#3B4A20',
-                            extendedProps: {
-                                id: r.id,
-                                nombre_cliente: r.nombre_cliente,
-                                telefono_cliente: r.telefono_cliente,
-                                area_evento: r.area_evento,
-                                numero_personas: r.numero_personas,
-                                tipo_evento: r.tipo_evento,
-                                fecha_reserva: r.fecha_reserva,
-                                hora_reserva: r.hora_reserva
-                            }
-                        }));
+                        const eventos = reservasCache.map(r => {
+                            // Compatibilidad con modificaciones en nombres de columnas de la BD
+                            const nombre = r.nombre_cliente || r.nombre || r.cliente || 'Cliente';
+                            const telefono = r.telefono_cliente || r.telefono || '';
+                            const area = r.area_evento || r.area || 'restorante';
+                            const personas = r.numero_personas || r.personas || r.pax || 1;
+                            const tipo = r.tipo_evento || r.tipo || 'evento';
+                            const fecha = r.fecha_reserva || r.fecha || (r.created_at ? r.created_at.split('T')[0] : new Date().toISOString().split('T')[0]);
+                            const hora = r.hora_reserva || r.hora || '12:00';
+
+                            return {
+                                id: String(r.id),
+                                title: `${tipo.toUpperCase()} (${area.toUpperCase()}) - ${nombre}`,
+                                start: `${fecha}T${hora.length === 5 ? hora : hora + ':00'}`,
+                                backgroundColor: '#556B2F',
+                                borderColor: '#3B4A20',
+                                extendedProps: {
+                                    ...r,
+                                    id: r.id,
+                                    nombre_cliente: nombre,
+                                    telefono_cliente: telefono,
+                                    area_evento: area,
+                                    numero_personas: personas,
+                                    tipo_evento: tipo,
+                                    fecha_reserva: fecha,
+                                    hora_reserva: hora
+                                }
+                            };
+                        });
 
                         successCallback(eventos);
                     } catch (err) {
