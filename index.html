@@ -94,13 +94,10 @@
 
         <!-- Indicador de Estado -->
         <div class="flex items-center gap-2">
-            <button id="statusBadge" onclick="alternarModoDemo()" title="Haz clic para alternar entre Modo Demo y Supabase" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-bold px-3.5 py-2 rounded-full flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95">
-                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-                <span id="statusBadgeText">Modo Demo Local</span>
-            </button>
-            <button onclick="abrirModalConfig()" title="Configurar conexión Supabase" class="bg-white/80 hover:bg-white text-stone-800 p-2 rounded-full border border-stone-300 shadow-sm transition-transform active:scale-95">
-                ⚙️
-            </button>
+            <div id="statusBadge" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 text-xs font-bold px-3.5 py-2 rounded-full flex items-center gap-2 shadow-sm transition-all">
+                <span id="statusBadgeDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="statusBadgeText">Sincronizado en Vivo</span>
+            </div>
         </div>
     </header>
 
@@ -294,46 +291,16 @@
         </div>
     </div>
 
-    <!-- Modal de Configuración de Supabase -->
-    <div id="modalConfig" class="hidden fixed inset-0 bg-stone-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-[#f9fbf7] border-2 border-[#556B2F] w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-4">
-            <div class="flex justify-between items-center border-b border-stone-200 pb-3">
-                <h3 class="font-bold text-lg text-[#3B4A20]">⚙️ Conexión Sincronizada (Supabase)</h3>
-                <button onclick="cerrarModalConfig()" class="text-stone-500 text-xl font-bold">&times;</button>
-            </div>
-            <p class="text-xs text-stone-600">
-                Para sincronizar el calendario entre todos los celulares y tablets en tiempo real, ingresa las credenciales de tu proyecto Supabase:
-            </p>
-            <div>
-                <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Supabase URL</label>
-                <input type="text" id="cfg_url" placeholder="https://xyz.supabase.co" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-mono">
-            </div>
-            <div>
-                <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Supabase Anon Key</label>
-                <input type="password" id="cfg_key" placeholder="eyJhbGciOi..." class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-mono">
-            </div>
-            <div class="flex gap-2 pt-2">
-                <button onclick="guardarConfigSupabase()" class="flex-1 py-3 bg-[#556B2F] hover:bg-[#3B4A20] text-white text-xs font-bold uppercase rounded-xl shadow-md">
-                    Guardar y Sincronizar
-                </button>
-                <button onclick="limpiarConfigSupabase()" class="px-3 py-3 bg-red-100 hover:bg-red-200 text-red-800 text-xs font-bold rounded-xl">
-                    Desconectar
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Script Principal de Lógica de la Interfaz -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
         // =========================================================================
         // CREDENCIALES FIJAS DE SUPABASE
-        // Coloca aquí tu URL y Anon Key de Supabase para conectar todos los dispositivos
+        // Ingresa aquí tu URL y Anon Key de Supabase directamente en el código
         // =========================================================================
-        let SUPABASE_URL = 'https://xyz.supabase.co'; // <--- Reemplaza con tu Supabase URL
-        let SUPABASE_ANON_KEY = 'eyJhbGciOi...';      // <--- Reemplaza con tu Supabase Anon Key
-        let FORZAR_MODO_DEMO = false;
+        const SUPABASE_URL = 'https://xyz.supabase.co'; // <--- Reemplaza con tu Supabase URL
+        const SUPABASE_ANON_KEY = 'eyJhbGciOi...';      // <--- Reemplaza con tu Supabase Anon Key
 
         let supabase = null;
         let calendar = null;
@@ -342,42 +309,36 @@
         let reservasCache = [];
 
         function initSupabaseClient() {
-            const savedUrl = localStorage.getItem('OLIVETTA_SUPABASE_URL');
-            const savedKey = localStorage.getItem('OLIVETTA_SUPABASE_KEY');
-            const savedDemo = localStorage.getItem('OLIVETTA_FORCE_DEMO');
+            const badge = document.getElementById('statusBadge');
+            const badgeDot = document.getElementById('statusBadgeDot');
+            const badgeText = document.getElementById('statusBadgeText');
 
-            if (savedUrl) SUPABASE_URL = savedUrl;
-            if (savedKey) SUPABASE_ANON_KEY = savedKey;
-            if (savedDemo !== null) FORZAR_MODO_DEMO = savedDemo === 'true';
-
-            const isConfigured = !FORZAR_MODO_DEMO && 
-                                 SUPABASE_URL && 
+            const isConfigured = SUPABASE_URL && 
                                  SUPABASE_URL.startsWith('http') && 
                                  !SUPABASE_URL.includes('xyz.supabase.co') && 
                                  SUPABASE_ANON_KEY && 
                                  SUPABASE_ANON_KEY.length > 20;
-            
-            const badge = document.getElementById('statusBadge');
-            const badgeText = document.getElementById('statusBadgeText');
 
             if (isConfigured) {
                 try {
                     supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
                     if (badge) {
-                        badge.className = 'bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 text-xs font-bold px-3.5 py-2 rounded-full flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95';
+                        badge.className = 'bg-emerald-100 text-emerald-900 border border-emerald-300 text-xs font-bold px-3.5 py-2 rounded-full flex items-center gap-2 shadow-sm';
+                        if (badgeDot) badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse';
                         if (badgeText) badgeText.innerText = 'Sincronizado en Vivo';
                     }
                     conectarSincronizacionTiempoReal();
                 } catch (e) {
                     console.error('Error al inicializar Supabase:', e);
-                    mostrarNotificacion('Error al conectar con Supabase: ' + e.message, true);
+                    if (badgeText) badgeText.innerText = 'Error de Conexión';
                 }
             } else {
                 supabase = null;
                 desconectarSincronizacionTiempoReal();
                 if (badge) {
-                    badge.className = 'bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-bold px-3.5 py-2 rounded-full flex items-center gap-2 shadow-sm transition-all cursor-pointer active:scale-95';
-                    if (badgeText) badgeText.innerText = 'Modo Demo Local';
+                    badge.className = 'bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold px-3.5 py-2 rounded-full flex items-center gap-2 shadow-sm';
+                    if (badgeDot) badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse';
+                    if (badgeText) badgeText.innerText = 'Modo Local / Demo';
                 }
             }
         }
@@ -424,66 +385,6 @@
             }
         }
 
-        window.abrirModalConfig = function() {
-            document.getElementById('cfg_url').value = localStorage.getItem('OLIVETTA_SUPABASE_URL') || '';
-            document.getElementById('cfg_key').value = localStorage.getItem('OLIVETTA_SUPABASE_KEY') || '';
-            document.getElementById('modalConfig').classList.remove('hidden');
-        };
-
-        window.cerrarModalConfig = function() {
-            document.getElementById('modalConfig').classList.add('hidden');
-        };
-
-        window.guardarConfigSupabase = function() {
-            const url = document.getElementById('cfg_url').value.trim();
-            const key = document.getElementById('cfg_key').value.trim();
-
-            if (!url || !key) {
-                mostrarNotificacion('Ingresa una URL y Clave válidas', true);
-                return;
-            }
-
-            localStorage.setItem('OLIVETTA_SUPABASE_URL', url);
-            localStorage.setItem('OLIVETTA_SUPABASE_KEY', key);
-            localStorage.setItem('OLIVETTA_FORCE_DEMO', 'false');
-
-            SUPABASE_URL = url;
-            SUPABASE_ANON_KEY = key;
-            FORZAR_MODO_DEMO = false;
-
-            initSupabaseClient();
-            if (calendar) calendar.refetchEvents();
-            cerrarModalConfig();
-            mostrarNotificacion('Conectado a la base de datos centralizada');
-        };
-
-        window.limpiarConfigSupabase = function() {
-            localStorage.removeItem('OLIVETTA_SUPABASE_URL');
-            localStorage.removeItem('OLIVETTA_SUPABASE_KEY');
-            localStorage.setItem('OLIVETTA_FORCE_DEMO', 'true');
-            SUPABASE_URL = '';
-            SUPABASE_ANON_KEY = '';
-            FORZAR_MODO_DEMO = true;
-            initSupabaseClient();
-            if (calendar) calendar.refetchEvents();
-            cerrarModalConfig();
-            mostrarNotificacion('Modo Demo Local Activado');
-        };
-
-        window.alternarModoDemo = function() {
-            if (!localStorage.getItem('OLIVETTA_SUPABASE_URL')) {
-                abrirModalConfig();
-                return;
-            }
-            FORZAR_MODO_DEMO = !FORZAR_MODO_DEMO;
-            localStorage.setItem('OLIVETTA_FORCE_DEMO', FORZAR_MODO_DEMO ? 'true' : 'false');
-            initSupabaseClient();
-            if (calendar) {
-                calendar.refetchEvents();
-            }
-            mostrarNotificacion(FORZAR_MODO_DEMO ? 'Modo Demo Local' : 'Conectando con Supabase...');
-        };
-
         document.addEventListener('DOMContentLoaded', function() {
             initSupabaseClient();
 
@@ -509,11 +410,7 @@
                     week: 'Semana',
                     day: 'Día'
                 },
-                headerToolbar: esMovil ? {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'timeGridDay,timeGridWeek'
-                } : {
+                headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
