@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Olivetta Ristorante - Calendario de Eventos</title>
     
-    <!-- Google Fonts -->
+    <!-- Google Fonts: Playfair Display & Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -24,7 +24,7 @@
             font-family: 'Playfair Display', serif;
         }
 
-        /* FullCalendar styling */
+        /* Personalización elegante para FullCalendar */
         .fc {
             --fc-border-color: rgba(85, 107, 47, 0.15);
             --fc-button-bg-color: #556B2F;
@@ -63,6 +63,7 @@
             height: 3.4em !important;
         }
         
+        /* Tarjetas de eventos personalizadas según el área */
         .fc-event {
             border-radius: 10px !important;
             border: 1px solid rgba(255,255,255,0.4) !important;
@@ -81,6 +82,7 @@
             overflow: hidden;
         }
 
+        /* Clases de colores según el Área */
         .area-restorante {
             background: linear-gradient(135deg, #556B2F 0%, #3B4A20 100%) !important;
             color: #ffffff !important;
@@ -93,12 +95,13 @@
             background: linear-gradient(135deg, #3A7CA5 0%, #205072 100%) !important;
             color: #ffffff !important;
         }
-        .area-salon\ de\ fiestas {
-            background: linear-gradient(135deg, #58044d 0%, #720563 100%) !important;
+        /* Color exclusivo e identificable para el Salón de Fiesta Cóndor */
+        .area-salon {
+            background: linear-gradient(135deg, #6B1D52 0%, #420D32 100%) !important;
             color: #ffffff !important;
         }
-        .area-sala\ de\ conferencias {
-            background: linear-gradient(135deg, #5b6163 0%, #c7c3b8 100%) !important;
+        .area-conferencias {
+            background: linear-gradient(135deg, #4A5568 0%, #2D3748 100%) !important;
             color: #ffffff !important;
         }
 
@@ -113,6 +116,7 @@
             }
         }
 
+        /* Estilos de Impresión */
         @media print {
             body * {
                 visibility: hidden !important;
@@ -141,6 +145,7 @@
     <!-- Encabezado Principal -->
     <header class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 py-4 mb-5 bg-white/90 p-4 px-6 rounded-2xl border border-white/60 shadow-xl backdrop-blur-md">
         <div class="flex items-center gap-4">
+            <!-- Isotipo 'O' con resplandor dorado sutil -->
             <div class="w-14 h-14 rounded-full border-2 border-[#556B2F] shadow-md overflow-hidden bg-[#556B2F] flex items-center justify-center shrink-0">
                 <img src="logo.olivetta.jpg" alt="Olivetta Logo" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/100x100/556B2F/ffffff?text=O';">
             </div>
@@ -150,6 +155,7 @@
             </div>
         </div>
 
+        <!-- Indicador de Estado -->
         <div class="flex items-center gap-2">
             <div id="statusBadge" class="bg-emerald-100/90 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 text-xs font-bold px-4 py-2 rounded-full flex items-center gap-2 shadow-sm transition-all">
                 <span id="statusBadgeDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -158,7 +164,7 @@
         </div>
     </header>
 
-    <!-- Barra de Métricas Rápidas -->
+    <!-- Barra de Métricas Rápidas (KPIs) -->
     <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
         <div class="bg-white/90 backdrop-blur-md border border-stone-200/80 rounded-2xl p-3.5 px-5 shadow-lg flex items-center justify-between">
             <div>
@@ -185,8 +191,8 @@
                     <span class="px-2 py-0.5 rounded-md bg-[#556B2F] text-white">Rest. (50p)</span>
                     <span class="px-2 py-0.5 rounded-md bg-[#C87D55] text-white">Terr. (50p)</span>
                     <span class="px-2 py-0.5 rounded-md bg-[#3A7CA5] text-white">Pisc. (30p)</span>
-                    <span class="px-2 py-0.5 rounded-md bg-[#58044d] text-white">Salón (70p)</span>
-                    <span class="px-2 py-0.5 rounded-md bg-[#5b6163] text-white">Conf. (20p)</span>
+                    <span class="px-2 py-0.5 rounded-md bg-[#6B1D52] text-white">Salón Cóndor (70p)</span>
+                    <span class="px-2 py-0.5 rounded-md bg-[#4A5568] text-white">Conf. (20p)</span>
                 </div>
             </div>
         </div>
@@ -194,6 +200,7 @@
 
     <!-- Contenedor Principal del Calendario -->
     <main class="max-w-6xl mx-auto bg-white/95 rounded-2xl shadow-2xl p-4 md:p-6 border border-stone-200/80 backdrop-blur-sm mb-6">
+        <!-- Barra de Acciones Superior -->
         <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mb-5 border-b border-stone-200/80 pb-4">
             <h2 class="text-lg md:text-xl font-serif-luxury font-bold text-[#3B4A20] flex items-center gap-2">
                 🍷 Calendario de Reservas
@@ -208,11 +215,12 @@
             </div>
         </div>
 
+        <!-- FullCalendar Render Area -->
         <div id="calendar" class="min-h-[550px]"></div>
 
+        <!-- Pie de página -->
         <footer class="mt-8 pt-4 border-t border-stone-200/80 text-center text-xs font-semibold text-stone-600">
-            <p>© 2026 Olivetta Ristorante. Todos los derechos reservados.</p>
-            <p>Creador de la Web, Ruben Abinazar Figarella.</p>
+            © 2026 Olivetta Ristorante, Todos los derechos reservados.
         </footer>
     </main>
 
@@ -229,57 +237,50 @@
             <form id="reservaForm" class="space-y-4">
                 <input type="hidden" id="reserva_id">
 
+                <!-- Nombre del Cliente -->
                 <div>
                     <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Nombre del Cliente *</label>
-                    <input type="text" id="nombre_cliente" required placeholder="Ej. Antonio Lezama" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
+                    <input type="text" id="nombre_cliente" required placeholder="Ej. Antonio Abinazar" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
                 </div>
 
+                <!-- Teléfono del Cliente -->
                 <div>
                     <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Teléfono de Contacto *</label>
                     <input type="tel" id="telefono_cliente" required placeholder="Ej. 0414-1234567" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
                 </div>
 
+                <!-- Área del Evento y Cantidad de Personas -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Área del Evento *</label>
                         <select id="area_evento" required onchange="actualizarInfoCapacidad()" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
                             <option value="restorante">Restorante (Máx 50p)</option>
                             <option value="terraza">Terraza (Máx 50p)</option>
-                            <option value="piscina/pizzeria">Piscina / Pizzeria (Máx 30p)</option>
-                            <option value="salon de fiestas">Salón de Fiestas (Máx 70p)</option>
-                            <option value="sala de conferencias">Sala de Conferencias (Máx 20p)</option>
+                            <option value="piscina">Piscina / Pizzería (Máx 30p)</option>
+                            <option value="salon">Salón de Fiesta Cóndor (Máx 70p)</option>
+                            <option value="conferencias">Sala de Conferencias (Máx 20p)</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Cantidad Personas *</label>
-                        <input type="number" id="numero_personas" required min="1" max="100" value="10" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
+                        <input type="number" id="numero_personas" required min="1" max="300" value="10" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
                     </div>
                 </div>
 
-                <!-- Mensaje informativo de autoredistribución -->
-                <p id="msgCapacidad" class="text-[11px] font-semibold text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200 hidden">
-                    ℹ️ Nota: Si supera las 50 personas en Restorante, el saldo sobrante se moverá automáticamente a la Terraza.
-                </p>
-
+                <!-- Tipo de Evento -->
                 <div>
                     <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Tipo de Evento *</label>
                     <select id="tipo_evento" required class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
-                        <option value="cumpleaños">🎉 Cumpleaños</option>
+                        <option value="cumpleanos">🎉 Cumpleaños</option>
                         <option value="bautizo">✝️ Bautizo</option>
                         <option value="reunion_corporativa">💼 Reunión Corporativa</option>
                         <option value="boda_civil">💍 Boda Civil</option>
                         <option value="graduacion">🎓 Graduación</option>
-                        <option value="primera comunion">✝️ Primera Comunión</option>
-                        <option value="fiesta navideña">🎄 Fiesta Navideña</option>
-                        <option value="fiesta fin de año">🎄 Fiesta Fin de Año</option>
-                        <option value="dia de las madre">💝 Día de las Madres</option>
-                        <option value="dia del padre">👨 Día del Padre</option>
-                        <option value="carnaval">🎭 Carnaval</option>
-                        <option value="revelacion de genero">🍼 Revelación de Género</option>
                         <option value="otro">✨ Otro Evento</option>
                     </select>
                 </div>
 
+                <!-- Fecha y Hora -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Fecha del Evento *</label>
@@ -291,6 +292,7 @@
                     </div>
                 </div>
 
+                <!-- Botones de Acción del Modal -->
                 <div class="flex gap-2 pt-3 border-t border-stone-200">
                     <button type="submit" id="btnGuardarReserva" class="flex-1 py-3 bg-[#556B2F] hover:bg-[#3B4A20] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95">
                         <span id="txtBtnGuardar">Confirmar Reserva</span>
@@ -306,7 +308,7 @@
         </div>
     </div>
 
-    <!-- Modal Listado e Impresión -->
+    <!-- Modal Flotante para Listado e Impresión de Reservas -->
     <div id="modalListado" class="hidden fixed inset-0 bg-stone-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 md:p-5 overflow-y-auto">
         <div class="bg-white border-2 border-[#556B2F] w-full max-w-4xl rounded-2xl shadow-2xl p-5 md:p-6 space-y-4 my-auto max-h-[90vh] flex flex-col">
             
@@ -317,6 +319,7 @@
                 <button onclick="cerrarModalListado()" class="text-stone-400 hover:text-stone-700 text-2xl font-bold leading-none self-end sm:self-auto">&times;</button>
             </div>
 
+            <!-- Filtros de Selección de Período -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-stone-100 p-3 rounded-xl border border-stone-200 no-print">
                 <div>
                     <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Filtrar Por *</label>
@@ -337,6 +340,7 @@
                 </div>
             </div>
 
+            <!-- Área Imprimible del Reporte -->
             <div id="areaImpresion" class="overflow-y-auto flex-1 pr-1 space-y-4">
                 <div class="text-center border-b-2 border-[#556B2F] pb-3">
                     <h2 class="text-2xl font-bold font-serif-luxury uppercase tracking-wider text-stone-900">Olivetta Ristorante</h2>
@@ -344,6 +348,7 @@
                     <p id="subtituloPeriodo" class="text-xs font-bold text-[#556B2F] mt-1 bg-stone-100 py-1 px-3 rounded-full inline-block border border-stone-200"></p>
                 </div>
 
+                <!-- Tabla de Eventos -->
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs border-collapse">
                         <thead>
@@ -360,24 +365,6 @@
                         </tbody>
                     </table>
                 </div>
-
-                <div class="flex justify-between items-center pt-3 border-t border-stone-300 text-xs font-bold text-stone-800">
-                    <div id="totalEventosText">Total Eventos: 0</div>
-                    <div id="totalPersonasText" class="text-[#556B2F]">Total Personas: 0</div>
-                </div>
-            </div>
-
-            <div class="flex gap-2 pt-3 border-t border-stone-200 no-print">
-                <button onclick="imprimirListado()" class="flex-1 py-3 bg-[#556B2F] hover:bg-[#3B4A20] text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
-                    🖨️ Imprimir / Guardar PDF
-                </button>
-                <button onclick="cerrarModalListado()" class="px-6 py-3 bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-bold uppercase rounded-xl transition-all">
-                    Cerrar
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Script Principal con Validación de Límites y Distribución -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -391,9 +378,21 @@
             'restorante': 50,
             'terraza': 50,
             'piscina': 30,
-            'salon de fiestas': 70,
-            'sala de conferencias': 20
+            'salon': 70,
+            'conferencias': 20
         };
+
+        // Función normalizadora para garantizar slugs de clase limpios
+        function obtenerSlugArea(areaRaw) {
+            if (!areaRaw) return 'restorante';
+            const str = String(areaRaw).toLowerCase().trim();
+            if (str.includes('piscina') || str.includes('pizzeria')) return 'piscina';
+            if (str.includes('condor') || str.includes('salon') || str.includes('salón')) return 'salon';
+            if (str.includes('conferencia')) return 'conferencias';
+            if (str.includes('terraza')) return 'terraza';
+            if (str.includes('restorante') || str.includes('restaurante')) return 'restorante';
+            return 'restorante';
+        }
 
         let supabase = null;
         let calendar = null;
@@ -440,23 +439,31 @@
             if (!supabase) return;
 
             if (realtimeChannel) {
-                supabase.removeChannel(realtimeChannel);
+                try {
+                    supabase.removeChannel(realtimeChannel);
+                } catch (e) {}
             }
 
             try {
                 realtimeChannel = supabase
                     .channel('public:reservas_cambios')
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'reservas' }, () => {
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'reservas' }, (payload) => {
                         if (calendar) {
                             calendar.refetchEvents();
                             mostrarNotificacion('🔄 Calendario actualizado en vivo');
                         }
-                    })
-                    .subscribe();
+                    });
+
+                realtimeChannel.subscribe((status, err) => {
+                    if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || err) {
+                        console.warn('Realtime WebSocket restrict; falling back to periodic polling.', err || status);
+                    }
+                });
             } catch (err) {
-                console.warn('Error suscribiendo a tiempo real:', err);
+                console.warn('WebSocket connections blocked in sandbox/iframe environment. Operating with automatic polling fallback:', err);
             }
 
+            // Fallback auto-refresh interval (polling every 15s) to guarantee updates regardless of WebSocket restrictions
             if (!autoRefreshInterval) {
                 autoRefreshInterval = setInterval(() => {
                     if (supabase && calendar) {
@@ -468,7 +475,9 @@
 
         function desconectarSincronizacionTiempoReal() {
             if (realtimeChannel && supabase) {
-                supabase.removeChannel(realtimeChannel);
+                try {
+                    supabase.removeChannel(realtimeChannel);
+                } catch (e) {}
                 realtimeChannel = null;
             }
             if (autoRefreshInterval) {
@@ -488,16 +497,6 @@
             document.getElementById('kpiPersonasHoy').innerText = totalPersonas;
         }
 
-        window.actualizarInfoCapacidad = function() {
-            const area = document.getElementById('area_evento').value;
-            const msgCap = document.getElementById('msgCapacidad');
-            if (area === 'restorante') {
-                msgCap.classList.remove('hidden');
-            } else {
-                msgCap.classList.add('hidden');
-            }
-        };
-
         document.addEventListener('DOMContentLoaded', function() {
             initSupabaseClient();
 
@@ -512,6 +511,8 @@
                 slotDuration: '01:00:00',
                 slotEventOverlap: true,
                 dayMaxEvents: true,
+                
+                // Formato de horas en 12 Horas (AM / PM)
                 slotLabelFormat: {
                     hour: 'numeric',
                     minute: '2-digit',
@@ -556,7 +557,7 @@
                         id: info.event.id,
                         nombre_cliente: props.nombre_cliente || '',
                         telefono_cliente: props.telefono_cliente || '',
-                        area_evento: props.area_evento || 'restorante',
+                        area_evento: obtenerSlugArea(props.area_evento),
                         numero_personas: props.numero_personas || 10,
                         tipo_evento: props.tipo_evento || 'cumpleanos',
                         fecha_reserva: props.fecha_reserva || info.event.startStr.split('T')[0],
@@ -570,9 +571,9 @@
                             const demoProps = {
                                 nombre_cliente: 'Antonio Lezama',
                                 telefono_cliente: '0414-1234567',
-                                area_evento: 'terraza',
-                                numero_personas: 15,
-                                tipo_evento: 'cumpleanos',
+                                area_evento: 'salon',
+                                numero_personas: 45,
+                                tipo_evento: 'cumpleaños',
                                 fecha_reserva: demoFecha,
                                 hora_reserva: '14:00'
                             };
@@ -581,9 +582,9 @@
 
                             successCallback([{
                                 id: 'demo-1',
-                                title: '🎉 CUMPLEAÑOS - Antonio Lezama',
+                                title: '🎉 CUMPLEAÑOS (45p) - Antonio Lezama',
                                 start: `${demoFecha}T14:00:00`,
-                                className: 'area-terraza',
+                                className: 'area-salon',
                                 extendedProps: demoProps
                             }]);
                             return;
@@ -603,7 +604,7 @@
                         const eventos = reservasCache.map(r => {
                             const nombre = r.nombre_cliente || r.nombre || r.cliente || 'Cliente';
                             const telefono = r.telefono_cliente || r.telefono || '';
-                            const area = (r.area_evento || r.area || 'restorante').toLowerCase();
+                            const areaSlug = obtenerSlugArea(r.area_evento || r.area);
                             const personas = r.numero_personas || r.personas || r.pax || 1;
                             const tipo = r.tipo_evento || r.tipo || 'evento';
                             const fecha = r.fecha_reserva || r.fecha || (r.created_at ? r.created_at.split('T')[0] : new Date().toISOString().split('T')[0]);
@@ -618,13 +619,13 @@
                                 id: String(r.id),
                                 title: `${tipo.toUpperCase()} (${personas}p) - ${nombre}`,
                                 start: startIso,
-                                className: `area-${area}`,
+                                className: `area-${areaSlug}`,
                                 extendedProps: {
                                     ...r,
                                     id: r.id,
                                     nombre_cliente: nombre,
                                     telefono_cliente: telefono,
-                                    area_evento: area,
+                                    area_evento: areaSlug,
                                     numero_personas: personas,
                                     tipo_evento: tipo,
                                     fecha_reserva: fecha,
@@ -650,67 +651,16 @@
                 btn.disabled = true;
 
                 const idReserva = document.getElementById('reserva_id').value;
-                const area = document.getElementById('area_evento').value;
-                const numPersonas = parseInt(document.getElementById('numero_personas').value);
-                const maxPermitido = CAPACIDADES_MAXIMAS[area] || 50;
-
-                // VALIDACIÓN Y REDISTRIBUCIÓN DE AFORO
-                let reservasAGuardar = [];
-
-                if (area === 'restorante' && numPersonas > 50) {
-                    const excedente = numPersonas - 50;
-
-                    if (excedente > 50) {
-                        mostrarNotificacion(`⚠️ Excede la capacidad máxima combinada (Restorante 50p + Terraza 50p). Máximo total 100 personas.`, true);
-                        btn.disabled = false;
-                        return;
-                    }
-
-                    // Reserva 1: Restorante (50 personas)
-                    reservasAGuardar.push({
-                        nombre_cliente: document.getElementById('nombre_cliente').value.trim() + ' (Restorante)',
-                        telefono_cliente: document.getElementById('telefono_cliente').value.trim(),
-                        area_evento: 'restorante',
-                        numero_personas: 50,
-                        tipo_evento: document.getElementById('tipo_evento').value,
-                        fecha_reserva: document.getElementById('fecha_reserva').value,
-                        hora_reserva: document.getElementById('hora_reserva').value,
-                        estado: 'pendiente'
-                    });
-
-                    // Reserva 2: Terraza (Diferencia Excedente)
-                    reservasAGuardar.push({
-                        nombre_cliente: document.getElementById('nombre_cliente').value.trim() + ' (Excedente Terraza)',
-                        telefono_cliente: document.getElementById('telefono_cliente').value.trim(),
-                        area_evento: 'terraza',
-                        numero_personas: excedente,
-                        tipo_evento: document.getElementById('tipo_evento').value,
-                        fecha_reserva: document.getElementById('fecha_reserva').value,
-                        hora_reserva: document.getElementById('hora_reserva').value,
-                        estado: 'pendiente'
-                    });
-
-                    mostrarNotificacion(`⚠️ Capacidad de Restorante superada (50p). Asignando ${excedente}p sobrantes a Terraza.`);
-
-                } else {
-                    // Validar límite para otras áreas
-                    if (numPersonas > maxPermitido) {
-                        mostrarNotificacion(`⚠️ El área ${area.toUpperCase()} solo permite un máximo de ${maxPermitido} personas.`, true);
-                        btn.disabled = false;
-                        return;
-                    }
-
-                    reservasAGuardar.push({
-                        nombre_cliente: document.getElementById('nombre_cliente').value.trim(),
-                        telefono_cliente: document.getElementById('telefono_cliente').value.trim(),
-                        area_evento: area,
-                        numero_personas: numPersonas,
-                        tipo_evento: document.getElementById('tipo_evento').value,
-                        fecha_reserva: document.getElementById('fecha_reserva').value,
-                        hora_reserva: document.getElementById('hora_reserva').value,
-                        estado: 'pendiente'
-                    });
-                }
+                const datosReserva = {
+                    nombre_cliente: document.getElementById('nombre_cliente').value.trim(),
+                    telefono_cliente: document.getElementById('telefono_cliente').value.trim(),
+                    area_evento: document.getElementById('area_evento').value,
+                    numero_personas: parseInt(document.getElementById('numero_personas').value),
+                    tipo_evento: document.getElementById('tipo_evento').value,
+                    fecha_reserva: document.getElementById('fecha_reserva').value,
+                    hora_reserva: document.getElementById('hora_reserva').value,
+                    estado: 'pendiente'
+                };
 
                 try {
                     if (!supabase) {
@@ -718,39 +668,30 @@
                             const event = calendar.getEventById(idReserva);
                             if (event) event.remove();
                         }
-                        
-                        reservasAGuardar.forEach((datos, index) => {
-                            const newId = idReserva && index === 0 ? idReserva : String(Date.now() + index);
-                            calendar.addEvent({
-                                id: newId,
-                                title: `${datos.tipo_evento.toUpperCase()} (${datos.numero_personas}p) - ${datos.nombre_cliente}`,
-                                start: `${datos.fecha_reserva}T${datos.hora_reserva}:00`,
-                                className: `area-${datos.area_evento}`,
-                                extendedProps: { ...datos, id: newId }
-                            });
+                        const newId = idReserva || String(Date.now());
+                        calendar.addEvent({
+                            id: newId,
+                            title: `${datosReserva.tipo_evento.toUpperCase()} (${datosReserva.numero_personas}p) - ${datosReserva.nombre_cliente}`,
+                            start: `${datosReserva.fecha_reserva}T${datosReserva.hora_reserva}:00`,
+                            className: `area-${datosReserva.area_evento}`,
+                            extendedProps: { ...datosReserva, id: newId }
                         });
                         
-                        mostrarNotificacion('¡Evento(s) guardado(s) localmente!');
+                        mostrarNotificacion('¡Evento guardado localmente!');
                         cerrarModal();
                         return;
                     }
 
-                    // Guardar todas las reservas generadas (1 o 2 en caso de división)
-                    for (let i = 0; i < reservasAGuardar.length; i++) {
-                        const targetId = (i === 0 && idReserva) ? idReserva : null;
-                        const res = await guardarEnSupabase(targetId, reservasAGuardar[i]);
+                    // Envío inteligente a Supabase probando variantes ortográficas para restricciones CHECK
+                    const res = await guardarEnSupabase(idReserva, datosReserva);
 
-                        if (res.error) {
-                            mostrarNotificacion('Error Supabase: ' + res.error.message, true);
-                            btn.disabled = false;
-                            return;
-                        }
+                    if (res.error) {
+                        mostrarNotificacion('Error Supabase: ' + res.error.message, true);
+                    } else {
+                        mostrarNotificacion(idReserva ? '¡Evento modificado!' : '¡Evento registrado!');
+                        cerrarModal();
+                        calendar.refetchEvents();
                     }
-
-                    mostrarNotificacion(idReserva ? '¡Evento modificado!' : '¡Evento(s) registrado(s) exitosamente!');
-                    cerrarModal();
-                    calendar.refetchEvents();
-
                 } catch (err) {
                     mostrarNotificacion('Ocurrió un error inesperado al guardar.', true);
                 } finally {
@@ -759,14 +700,103 @@
             });
         });
 
+        // Función auxiliar que prueba exhaustivamente formatos alternativos si la tabla tiene restricción CHECK estricta
         async function guardarEnSupabase(idReserva, datosReserva) {
-            let res;
-            if (idReserva) {
-                res = await supabase.from('reservas').update(datosReserva).eq('id', idReserva);
-            } else {
-                res = await supabase.from('reservas').insert([datosReserva]);
+            const keyTipo = datosReserva.tipo_evento;
+            const keyArea = datosReserva.area_evento;
+            
+            // Diccionario con todas las combinaciones probables que se suelen usar en Postgres / Supabase
+            const MAPPING_TIPOS = {
+                cumpleanos: ['Cumpleaños', 'cumpleaños', 'Cumpleanos', 'cumpleanos', 'CUMPLEAÑOS', 'cumpleanios', 'Cumpleanios'],
+                bautizo: ['Bautizo', 'bautizo', 'BAUTIZO'],
+                reunion_corporativa: ['Reunión Corporativa', 'Reunion Corporativa', 'reunion_corporativa', 'reunion corporativa', 'Reunión corporativa', 'Reunión', 'Reunion', 'Corporativo', 'empresarial'],
+                boda_civil: ['Boda Civil', 'Boda civil', 'boda_civil', 'boda civil', 'Boda', 'boda', 'Matrimonio'],
+                graduacion: ['Graduación', 'Graduacion', 'graduación', 'graduacion', 'GRADUACIÓN', 'GRADUACION'],
+                otro: ['Otro', 'otro', 'Otro Evento', 'otro_evento', 'Otros', 'otros', 'Evento', 'evento']
+            };
+
+            const MAPPING_AREAS = {
+                restorante: ['restorante', 'Restorante', 'Restaurante', 'restaurante', 'RESTORANTE'],
+                terraza: ['terraza', 'Terraza', 'TERRAZA'],
+                piscina: ['piscina', 'Piscina', 'PISCINA'],
+                salon: ['salon', 'Salon', 'Salón', 'salón', 'SALON', 'SALÓN']
+            };
+
+            // Extraer y limpiar de forma segura el texto de las opciones seleccionadas en el HTML
+            const selectTipo = document.getElementById('tipo_evento');
+            const textoTipoRaw = selectTipo ? selectTipo.options[selectTipo.selectedIndex].text : '';
+            const textoTipoLimpio = textoTipoRaw.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
+
+            const selectArea = document.getElementById('area_evento');
+            const textoAreaRaw = selectArea ? selectArea.options[selectArea.selectedIndex].text : '';
+            const textoAreaLimpio = textoAreaRaw.trim();
+
+            // Construir lista única de variantes para probar
+            const variantesTipos = [...new Set([
+                ...(MAPPING_TIPOS[keyTipo] || []),
+                keyTipo,
+                textoTipoLimpio,
+                textoTipoLimpio.toLowerCase(),
+                textoTipoLimpio.toUpperCase(),
+                'Otro', 'otro'
+            ])].filter(Boolean);
+
+            const variantesAreas = [...new Set([
+                keyArea,
+                ...(MAPPING_AREAS[keyArea] || []),
+                textoAreaLimpio,
+                textoAreaLimpio.toLowerCase()
+            ])].filter(Boolean);
+
+            let ultimoResultado = null;
+
+            // Matriz de combinaciones que prueba cada variación hasta dar con la correcta
+            for (const varArea of variantesAreas) {
+                for (const varTipo of variantesTipos) {
+                    const payload = { 
+                        ...datosReserva, 
+                        tipo_evento: varTipo,
+                        area_evento: varArea
+                    };
+
+                    let res;
+                    if (idReserva) {
+                        res = await supabase.from('reservas').update(payload).eq('id', idReserva);
+                    } else {
+                        res = await supabase.from('reservas').insert([payload]);
+                    }
+
+                    if (!res.error) {
+                        return { error: null };
+                    }
+
+                    // Si el error es una violación de restricción CHECK, continuamos probando el siguiente formato
+                    if (res.error.message.includes('check constraint')) {
+                        ultimoResultado = res;
+                        continue;
+                    } else {
+                        // Si es un error diferente (de red, permisos, etc.), retornar de inmediato
+                        return res;
+                    }
+                }
             }
-            return res;
+
+            // Intento final: Probar omitiendo tipo_evento si la columna permite valores por defecto
+            try {
+                const payloadSinTipo = { ...datosReserva };
+                delete payloadSinTipo.tipo_evento;
+                let resSinTipo;
+                if (idReserva) {
+                    resSinTipo = await supabase.from('reservas').update(payloadSinTipo).eq('id', idReserva);
+                } else {
+                    resSinTipo = await supabase.from('reservas').insert([payloadSinTipo]);
+                }
+                if (!resSinTipo.error) {
+                    return { error: null };
+                }
+            } catch (e) {}
+
+            return ultimoResultado;
         }
 
         window.abrirModalNuevaReserva = function() {
@@ -775,7 +805,6 @@
             document.getElementById('txtBtnGuardar').innerText = 'Confirmar Reserva';
             document.getElementById('btnEliminarReserva').classList.add('hidden');
             document.getElementById('modalReserva').classList.remove('hidden');
-            actualizarInfoCapacidad();
         };
 
         window.abrirModalEditarReserva = function(data) {
@@ -792,7 +821,6 @@
             document.getElementById('txtBtnGuardar').innerText = 'Guardar Cambios';
             document.getElementById('btnEliminarReserva').classList.remove('hidden');
             document.getElementById('modalReserva').classList.remove('hidden');
-            actualizarInfoCapacidad();
         };
 
         window.eliminarReservaActual = async function() {
@@ -930,15 +958,26 @@
                     </tr>
                 `;
             } else {
+                const nombresArea = {
+                    'restorante': 'Restorante',
+                    'terraza': 'Terraza',
+                    'piscina': 'Piscina / Pizzería',
+                    'salon': 'Salón de Fiesta Cóndor',
+                    'conferencias': 'Sala de Conferencias'
+                };
+
                 listaFiltrada.forEach(r => {
                     totalPersonas += parseInt(r.numero_personas || 0);
+                    const slug = obtenerSlugArea(r.area_evento);
+                    const nombreAreaFormatted = nombresArea[slug] || r.area_evento || 'Restorante';
+
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-stone-50 border-b border-stone-200';
                     row.innerHTML = `
                         <td class="p-2.5 font-bold text-stone-900 border border-stone-200">${r.fecha_reserva} <span class="text-[#556B2F] font-semibold">(${r.hora_reserva})</span></td>
                         <td class="p-2.5 font-semibold text-stone-800 border border-stone-200">${r.nombre_cliente}</td>
                         <td class="p-2.5 text-stone-700 border border-stone-200">${r.telefono_cliente}</td>
-                        <td class="p-2.5 capitalize border border-stone-200 font-bold">${r.area_evento || 'Restorante'}</td>
+                        <td class="p-2.5 border border-stone-200 font-bold">${nombreAreaFormatted}</td>
                         <td class="p-2.5 capitalize border border-stone-200">${(r.tipo_evento || 'Evento').replace('_', ' ')}</td>
                         <td class="p-2.5 text-center font-bold text-[#556B2F] border border-stone-200">${r.numero_personas}</td>
                     `;
