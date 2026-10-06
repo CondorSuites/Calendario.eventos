@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<DO!CTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -364,8 +364,31 @@
                         </thead>
                         <tbody id="tablaListadoBody" class="divide-y divide-stone-200">
                         </tbody>
+                        <tfoot id="tablaListadoFoot" class="bg-stone-100 font-bold text-stone-900 border-t-2 border-[#556B2F]">
+                            <tr>
+                                <td colspan="5" class="p-3 text-right border border-stone-300 font-serif-luxury text-xs uppercase tracking-wider">
+                                    TOTAL GENERAL ESTIMADO (<span id="totalEventosText">0 eventos</span>):
+                                </td>
+                                <td id="totalPersonasText" class="p-3 text-center border border-stone-300 font-bold text-sm text-[#556B2F] bg-emerald-50/80">
+                                    0 personas
+                                </td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
+
+                <!-- Botones de Acción del Modal Listado -->
+                <div class="flex justify-end gap-3 pt-3 border-t border-stone-200 no-print">
+                    <button onclick="imprimirListado()" class="px-5 py-2.5 bg-[#556B2F] hover:bg-[#3B4A20] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center gap-2">
+                        🖨️️ Imprimir / Guardar PDF
+                    </button>
+                    <button onclick="cerrarModalListado()" class="px-4 py-2.5 bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-bold uppercase rounded-xl transition-all">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Script Principal con Validación de Límites y Distribución -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
@@ -986,8 +1009,10 @@
                 });
             }
 
-            document.getElementById('totalEventosText').innerText = `Total Eventos: ${listaFiltrada.length}`;
-            document.getElementById('totalPersonasText').innerText = `Total Personas: ${totalPersonas}`;
+            const totalEvtEl = document.getElementById('totalEventosText');
+            const totalPaxEl = document.getElementById('totalPersonasText');
+            if (totalEvtEl) totalEvtEl.innerText = `${listaFiltrada.length} evento${listaFiltrada.length !== 1 ? 's' : ''}`;
+            if (totalPaxEl) totalPaxEl.innerText = `${totalPersonas} personas`;
         };
 
         window.imprimirListado = function() {
