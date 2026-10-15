@@ -444,7 +444,7 @@
                                     <td class="p-3 text-left border border-stone-300 font-serif-luxury text-xs uppercase tracking-wider">
                                         TOTAL GENERAL DESAYUNOS:
                                     </td>
-                                    <td id="totalProyectadosText" class="p-3 border border-stone-300 font-bold text-amber-900 bg-amber-50">0</td>
+                                    <td class="p-3 border border-stone-300 font-bold text-stone-400 bg-amber-50">- (Estimado)</td>
                                     <td id="totalSalientesText" class="p-3 border border-stone-300 font-bold text-amber-900 bg-amber-50">0</td>
                                     <td id="totalAdicionalesText" class="p-3 border border-stone-300 font-bold text-amber-900 bg-amber-50">0</td>
                                     <td id="totalGeneralDesayunosText" class="p-3 border border-stone-300 font-bold text-sm text-amber-900 bg-amber-100">0</td>
@@ -555,7 +555,6 @@
                             return;
                         }
 
-                        // Cargar Reservas y Desayunos en paralelo
                         const [resReservas, resDesayunos] = await Promise.all([
                             supabase.from('reservas').select('*'),
                             supabase.from('desayunos').select('*')
@@ -650,14 +649,12 @@
                 };
 
                 try {
-                    // Upsert basado en fecha para actualizar si ya existe el registro diario
                     const { error } = await supabase.from('desayunos').upsert([datosDesayuno], { onConflict: 'fecha' });
                     if (error) {
                         mostrarNotificacion('Error al guardar desayunos: ' + error.message, true);
                     } else {
                         mostrarNotificacion('¡Control de desayunos guardado!');
                         cerrarModalDesayunos();
-                        // Refrescar caché de desayunos
                         const { data } = await supabase.from('desayunos').select('*');
                         desayunosCache = data || [];
                     }
@@ -824,9 +821,9 @@
             document.getElementById('totalEventosText').innerText = `${listaFiltrada.length} evento${listaFiltrada.length !== 1 ? 's' : ''}`;
             document.getElementById('totalPersonasText').innerText = `${totalPersonas} personas`;
 
-            // Renderizar Tabla de Desayunos
+            // Renderizar Tabla de Desayunos (Sin sumar proyectados en el total general)
             tablaDesayunosBody.innerHTML = '';
-            let tProy = 0, tSal = 0, tAdic = 0, tGen = 0;
+            let tSal = 0, tAdic = 0, tGen = 0;
 
             if (desayunosFiltrados.length === 0) {
                 tablaDesayunosBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-stone-500 font-semibold italic">No hay registros de desayunos para este período.</td></tr>`;
@@ -837,7 +834,6 @@
                     const adic = parseInt(d.adicionales || 0);
                     const totalDia = proy + sal + adic;
 
-                    tProy += proy;
                     tSal += sal;
                     tAdic += adic;
                     tGen += totalDia;
@@ -846,7 +842,7 @@
                     row.className = 'hover:bg-stone-50 border-b border-stone-200 text-center';
                     row.innerHTML = `
                         <td class="p-2.5 font-bold text-stone-900 border border-stone-200 text-left">${d.fecha}</td>
-                        <td class="p-2.5 border border-stone-200">${proy}</td>
+                        <td class="p-2.5 border border-stone-200 text-stone-600">${proy}</td>
                         <td class="p-2.5 border border-stone-200">${sal}</td>
                         <td class="p-2.5 border border-stone-200">${adic}</td>
                         <td class="p-2.5 border border-stone-200 font-bold text-amber-900 bg-amber-50/50">${totalDia}</td>
@@ -855,7 +851,6 @@
                 });
             }
 
-            document.getElementById('totalProyectadosText').innerText = tProy;
             document.getElementById('totalSalientesText').innerText = tSal;
             document.getElementById('totalAdicionalesText').innerText = tAdic;
             document.getElementById('totalGeneralDesayunosText').innerText = tGen;
