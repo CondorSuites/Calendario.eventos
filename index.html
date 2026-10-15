@@ -206,6 +206,9 @@
                 <button onclick="abrirModalListado()" class="flex-1 sm:flex-none px-4 py-2.5 bg-stone-800 hover:bg-stone-950 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
                     📋 Listado / Imprimir
                 </button>
+                <button onclick="abrirModalDesayunos()" class="flex-1 sm:flex-none px-4 py-2.5 bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
+                    🥐 Control Desayunos
+                </button>
                 <button onclick="abrirModalNuevaReserva()" class="flex-1 sm:flex-none px-5 py-2.5 bg-[#556B2F] hover:bg-[#3B4A20] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
                     ➕ Agendar Evento
                 </button>
@@ -246,17 +249,16 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <!-- Área del Evento corregida -->
-<div>
-    <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Área del Evento *</label>
-    <select id="area_evento" required class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
-        <option value="restorante">Restorante (Máx 50p)</option>
-        <option value="terraza">Terraza (Máx 50p)</option>
-        <option value="piscina">Piscina / Pizzería (Máx 30p)</option>
-        <option value="salon">Salón de Fiesta Cóndor (Máx 70p)</option>
-        <option value="conferencias">Sala de Conferencias (Máx 20p)</option>
-    </select>
-</div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Área del Evento *</label>
+                        <select id="area_evento" required class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
+                            <option value="Restorante">Restorante (Máx 50p)</option>
+                            <option value="Terraza">Terraza (Máx 50p)</option>
+                            <option value="Piscina">Piscina / Pizzería (Máx 30p)</option>
+                            <option value="Salón de Fiesta Cóndor">Salón de Fiesta Cóndor (Máx 70p)</option>
+                            <option value="Sala de Conferencias">Sala de Conferencias (Máx 20p)</option>
+                        </select>
+                    </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Cantidad Personas *</label>
                         <input type="number" id="numero_personas" required min="1" max="300" value="10" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
@@ -310,13 +312,54 @@
         </div>
     </div>
 
-    <!-- Modal Flotante para Listado e Impresión de Reservas -->
+    <!-- Modal Flotante para Control Diario de Desayunos -->
+    <div id="modalDesayunos" class="hidden fixed inset-0 bg-stone-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 md:p-4 overflow-y-auto">
+        <div class="bg-[#fcfdfa] border-2 border-amber-700 w-full max-w-md rounded-2xl shadow-2xl p-5 md:p-6 space-y-4 my-auto">
+            <div class="flex justify-between items-center border-b border-stone-200 pb-3">
+                <h3 class="font-serif-luxury font-bold text-lg text-amber-900 flex items-center gap-2">
+                    🥐 Registrar Control de Desayunos
+                </h3>
+                <button onclick="cerrarModalDesayunos()" class="text-stone-400 hover:text-stone-700 text-2xl font-bold leading-none">&times;</button>
+            </div>
+
+            <form id="desayunoForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-amber-900 mb-1">Fecha del Control *</label>
+                    <input type="date" id="desayuno_fecha" required class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-amber-900 mb-1">Proyección *</label>
+                        <input type="number" id="desayuno_proyeccion" required min="0" value="0" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-amber-900 mb-1">Salida *</label>
+                        <input type="number" id="desayuno_salida" required min="0" value="0" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase text-amber-900 mb-1">Adicionales *</label>
+                        <input type="number" id="desayuno_adicionales" required min="0" value="0" class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-amber-700">
+                    </div>
+                </div>
+                <div class="flex gap-2 pt-3 border-t border-stone-200">
+                    <button type="submit" class="flex-1 py-3 bg-amber-700 hover:bg-amber-800 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95">
+                        Guardar Registro Diario
+                    </button>
+                    <button type="button" onclick="cerrarModalDesayunos()" class="px-4 py-3 bg-stone-200 hover:bg-stone-300 text-stone-800 text-xs font-bold uppercase rounded-xl transition-all">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Flotante para Listado e Impresión de Reservas y Desayunos -->
     <div id="modalListado" class="hidden fixed inset-0 bg-stone-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-3 md:p-5 overflow-y-auto">
-        <div class="bg-white border-2 border-[#556B2F] w-full max-w-4xl rounded-2xl shadow-2xl p-5 md:p-6 space-y-4 my-auto max-h-[90vh] flex flex-col">
+        <div class="bg-white border-2 border-[#556B2F] w-full max-w-5xl rounded-2xl shadow-2xl p-5 md:p-6 space-y-4 my-auto max-h-[90vh] flex flex-col">
             
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-stone-200 pb-3 no-print">
                 <h3 class="font-serif-luxury font-bold text-lg text-[#3B4A20] flex items-center gap-2">
-                    📋 Listado de Reservas y Eventos
+                    📋 Listado de Reservas y Control de Desayunos
                 </h3>
                 <button onclick="cerrarModalListado()" class="text-stone-400 hover:text-stone-700 text-2xl font-bold leading-none self-end sm:self-auto">&times;</button>
             </div>
@@ -342,38 +385,73 @@
             </div>
 
             <!-- Área Imprimible del Reporte -->
-            <div id="areaImpresion" class="overflow-y-auto flex-1 pr-1 space-y-4">
+            <div id="areaImpresion" class="overflow-y-auto flex-1 pr-1 space-y-6">
                 <div class="text-center border-b-2 border-[#556B2F] pb-3">
                     <h2 class="text-2xl font-bold font-serif-luxury uppercase tracking-wider text-stone-900">Olivetta Ristorante</h2>
-                    <p class="text-xs font-semibold text-stone-600 uppercase">Lechería, Anzoátegui — Reporte Oficial de Reservas</p>
+                    <p class="text-xs font-semibold text-stone-600 uppercase">Lechería, Anzoátegui — Reporte Oficial de Eventos y Desayunos</p>
                     <p id="subtituloPeriodo" class="text-xs font-bold text-[#556B2F] mt-1 bg-stone-100 py-1 px-3 rounded-full inline-block border border-stone-200"></p>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead>
-                            <tr class="bg-[#556B2F] text-white font-bold uppercase tracking-wider">
-                                <th class="p-2.5 border border-stone-300">Fecha / Hora</th>
-                                <th class="p-2.5 border border-stone-300">Cliente</th>
-                                <th class="p-2.5 border border-stone-300">Teléfono</th>
-                                <th class="p-2.5 border border-stone-300">Área</th>
-                                <th class="p-2.5 border border-stone-300">Tipo Evento</th>
-                                <th class="p-2.5 border border-stone-300 text-center">Personas</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tablaListadoBody" class="divide-y divide-stone-200">
-                        </tbody>
-                        <tfoot id="tablaListadoFoot" class="bg-stone-100 font-bold text-stone-900 border-t-2 border-[#556B2F]">
-                            <tr>
-                                <td colspan="5" class="p-3 text-right border border-stone-300 font-serif-luxury text-xs uppercase tracking-wider">
-                                    TOTAL GENERAL ESTIMADO (<span id="totalEventosText">0 eventos</span>):
-                                </td>
-                                <td id="totalPersonasText" class="p-3 text-center border border-stone-300 font-bold text-sm text-[#556B2F] bg-emerald-50/80">
-                                    0 personas
-                                </td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                <!-- Tabla de Eventos -->
+                <div>
+                    <h4 class="font-serif-luxury font-bold text-sm text-[#3B4A20] mb-2 uppercase">📅 Listado de Reservas y Eventos</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-[#556B2F] text-white font-bold uppercase tracking-wider">
+                                    <th class="p-2.5 border border-stone-300">Fecha / Hora</th>
+                                    <th class="p-2.5 border border-stone-300">Cliente</th>
+                                    <th class="p-2.5 border border-stone-300">Teléfono</th>
+                                    <th class="p-2.5 border border-stone-300">Área</th>
+                                    <th class="p-2.5 border border-stone-300">Tipo Evento</th>
+                                    <th class="p-2.5 border border-stone-300 text-center">Personas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaListadoBody" class="divide-y divide-stone-200">
+                            </tbody>
+                            <tfoot id="tablaListadoFoot" class="bg-stone-100 font-bold text-stone-900 border-t-2 border-[#556B2F]">
+                                <tr>
+                                    <td colspan="5" class="p-3 text-right border border-stone-300 font-serif-luxury text-xs uppercase tracking-wider">
+                                        TOTAL GENERAL EVENTOS (<span id="totalEventosText">0 eventos</span>):
+                                    </td>
+                                    <td id="totalPersonasText" class="p-3 text-center border border-stone-300 font-bold text-sm text-[#556B2F] bg-emerald-50/80">
+                                        0 personas
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tabla de Control de Desayunos -->
+                <div>
+                    <h4 class="font-serif-luxury font-bold text-sm text-amber-900 mb-2 uppercase">🥐 Control Diario de Desayunos</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-amber-800 text-white font-bold uppercase tracking-wider">
+                                    <th class="p-2.5 border border-stone-300">Fecha</th>
+                                    <th class="p-2.5 border border-stone-300 text-center">Proyectados</th>
+                                    <th class="p-2.5 border border-stone-300 text-center">Salientes</th>
+                                    <th class="p-2.5 border border-stone-300 text-center">Adicionales</th>
+                                    <th class="p-2.5 border border-stone-300 text-center">Total Día</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tablaDesayunosBody" class="divide-y divide-stone-200">
+                            </tbody>
+                            <tfoot id="tablaDesayunosFoot" class="bg-stone-100 font-bold text-stone-900 border-t-2 border-amber-800">
+                                <tr class="text-center">
+                                    <td class="p-3 text-left border border-stone-300 font-serif-luxury text-xs uppercase tracking-wider">
+                                        TOTAL GENERAL DESAYUNOS:
+                                    </td>
+                                    <td id="totalProyectadosText" class="p-3 border border-stone-300 font-bold text-amber-900 bg-amber-50">0</td>
+                                    <td id="totalSalientesText" class="p-3 border border-stone-300 font-bold text-amber-900 bg-amber-50">0</td>
+                                    <td id="totalAdicionalesText" class="p-3 border border-stone-300 font-bold text-amber-900 bg-amber-50">0</td>
+                                    <td id="totalGeneralDesayunosText" class="p-3 border border-stone-300 font-bold text-sm text-amber-900 bg-amber-100">0</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-3 border-t border-stone-200 no-print">
@@ -388,116 +466,32 @@
         </div>
     </div>
 
-    <!-- Script Principal con Validación y Sincronización -->
+    <!-- Script Principal con Sincronización y Desayunos -->
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
         const SUPABASE_URL = 'https://dvnfvrqdcdyfvgylujpu.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2bmZ2cnFkY2R5ZnZneWx1anB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2MDM3OTIsImV4cCI6MjEwNjE3OTc5Mn0.6YwUvCjANuDd_stKo3uxHiFZuWtVYI1E20vxICa80Ic';      
 
-        const CAPACIDADES_MAXIMAS = {
-            'restorante': 50,
-            'terraza': 50,
-            'piscina': 30,
-            'salon': 70,
-            'conferencias': 20
-        };
-
-        function obtenerSlugArea(areaRaw) {
-            if (!areaRaw) return 'restorante';
-            const str = String(areaRaw).toLowerCase().trim();
-            if (str.includes('piscina') || str.includes('pizzería')) return 'piscina';
-            if (str.includes('cóndor') || str.includes('condor') || str.includes('salón') || str.includes('salon')) return 'salon';
-            if (str.includes('conferencia')) return 'conferencias';
-            if (str.includes('terraza')) return 'terraza';
-            if (str.includes('restorante') || str.includes('restaurante')) return 'restorante';
-            return 'restorante';
-        }
-
         let supabase = null;
         let calendar = null;
-        let realtimeChannel = null;
-        let autoRefreshInterval = null;
         let reservasCache = [];
+        let desayunosCache = [];
 
         function initSupabaseClient() {
             const badge = document.getElementById('statusBadge');
             const badgeDot = document.getElementById('statusBadgeDot');
             const badgeText = document.getElementById('statusBadgeText');
 
-            const isConfigured = SUPABASE_URL && 
-                                 SUPABASE_URL.startsWith('http') && 
-                                 !SUPABASE_URL.includes('xyz.supabase.co') && 
-                                 SUPABASE_ANON_KEY && 
-                                 SUPABASE_ANON_KEY.length > 20;
-
-            if (isConfigured) {
+            if (SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_ANON_KEY.length > 20) {
                 try {
                     supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-                    if (badge) {
-                        badge.className = 'bg-emerald-100 text-emerald-900 border border-emerald-300 text-xs font-bold px-3.5 py-2 rounded-full flex items-center gap-2 shadow-sm';
-                        if (badgeDot) badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse';
-                        if (badgeText) badgeText.innerText = 'Sincronizado en Vivo';
-                    }
-                    conectarSincronizacionTiempoReal();
+                    if (badgeText) badgeText.innerText = 'Sincronizado en Vivo';
                 } catch (e) {
-                    console.error('Error al inicializar Supabase:', e);
                     if (badgeText) badgeText.innerText = 'Error de Conexión';
                 }
             } else {
-                supabase = null;
-                desconectarSincronizacionTiempoReal();
-                if (badge) {
-                    badge.className = 'bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold px-3.5 py-2 rounded-full flex items-center gap-2 shadow-sm';
-                    if (badgeDot) badgeDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse';
-                    if (badgeText) badgeText.innerText = 'Modo Local / Demo';
-                }
-            }
-        }
-
-        function conectarSincronizacionTiempoReal() {
-            if (!supabase) return;
-
-            if (realtimeChannel) {
-                try {
-                    supabase.removeChannel(realtimeChannel);
-                } catch (e) {}
-            }
-
-            try {
-                realtimeChannel = supabase
-                    .channel('public:reservas_cambios')
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'reservas' }, (payload) => {
-                        if (calendar) {
-                            calendar.refetchEvents();
-                            mostrarNotificacion('🔄 Calendario actualizado en vivo');
-                        }
-                    });
-
-                realtimeChannel.subscribe();
-            } catch (err) {
-                console.warn('WebSocket limitado; usando sondeo periódico de respaldo.', err);
-            }
-
-            if (!autoRefreshInterval) {
-                autoRefreshInterval = setInterval(() => {
-                    if (supabase && calendar) {
-                        calendar.refetchEvents();
-                    }
-                }, 15000);
-            }
-        }
-
-        function desconectarSincronizacionTiempoReal() {
-            if (realtimeChannel && supabase) {
-                try {
-                    supabase.removeChannel(realtimeChannel);
-                } catch (e) {}
-                realtimeChannel = null;
-            }
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-                autoRefreshInterval = null;
+                if (badgeText) badgeText.innerText = 'Modo Local / Demo';
             }
         }
 
@@ -526,43 +520,19 @@
                 slotDuration: '01:00:00',
                 slotEventOverlap: true,
                 dayMaxEvents: true,
-                
-                slotLabelFormat: {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    meridiem: 'short',
-                    hour12: true
-                },
-                eventTimeFormat: {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    meridiem: 'short',
-                    hour12: true
-                },
+                slotLabelFormat: { hour: 'numeric', minute: '2-digit', meridiem: 'short', hour12: true },
+                eventTimeFormat: { hour: 'numeric', minute: '2-digit', meridiem: 'short', hour12: true },
                 allDaySlot: false,
                 height: 'auto',
                 expandRows: true,
                 defaultTimedEventDuration: '02:00:00',
-                buttonText: {
-                    today: 'Hoy',
-                    month: 'Mes',
-                    week: 'Semana',
-                    day: 'Día'
-                },
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
+                buttonText: { today: 'Hoy', month: 'Mes', week: 'Semana', day: 'Día' },
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
                 selectable: true,
                 dateClick: function(info) {
                     const fechaHora = info.dateStr.split('T');
                     document.getElementById('fecha_reserva').value = fechaHora[0];
-                    if (fechaHora[1]) {
-                        document.getElementById('hora_reserva').value = fechaHora[1].substring(0, 5);
-                    } else {
-                        document.getElementById('hora_reserva').value = '12:00';
-                    }
+                    document.getElementById('hora_reserva').value = fechaHora[1] ? fechaHora[1].substring(0, 5) : '12:00';
                     abrirModalNuevaReserva();
                 },
                 eventClick: function(info) {
@@ -571,86 +541,57 @@
                         id: info.event.id,
                         nombre_cliente: props.nombre_cliente || '',
                         telefono_cliente: props.telefono_cliente || '',
-                        area_evento: obtenerSlugArea(props.area_evento),
+                        area_evento: props.area_evento || 'Restorante',
                         numero_personas: props.numero_personas || 10,
                         tipo_evento: props.tipo_evento || 'cumpleanos',
                         fecha_reserva: props.fecha_reserva || info.event.startStr.split('T')[0],
-                        hora_reserva: props.hora_reserva || (info.event.startStr.split('T')[1] ? info.event.startStr.split('T')[1].substring(0,5) : '12:00')
+                        hora_reserva: props.hora_reserva || '12:00'
                     });
                 },
                 events: async function(fetchInfo, successCallback, failureCallback) {
                     try {
                         if (!supabase) {
-                            const demoFecha = new Date().toISOString().split('T')[0];
-                            const demoProps = {
-                                nombre_cliente: 'Cliente Demo',
-                                telefono_cliente: '0414-0000000',
-                                area_evento: 'salon',
-                                numero_personas: 20,
-                                tipo_evento: 'cumpleanos',
-                                fecha_reserva: demoFecha,
-                                hora_reserva: '14:00'
-                            };
-                            reservasCache = [demoProps];
-                            actualizarKPIs(reservasCache);
-
-                            successCallback([{
-                                id: 'demo-1',
-                                title: '🎉 CUMPLEAÑOS (20p) - Cliente Demo',
-                                start: `${demoFecha}T14:00:00`,
-                                className: 'area-salon',
-                                extendedProps: demoProps
-                            }]);
+                            successCallback([]);
                             return;
                         }
 
-                        const { data, error } = await supabase.from('reservas').select('*');
+                        // Cargar Reservas y Desayunos en paralelo
+                        const [resReservas, resDesayunos] = await Promise.all([
+                            supabase.from('reservas').select('*'),
+                            supabase.from('desayunos').select('*')
+                        ]);
 
-                        if (error) {
-                            mostrarNotificacion('Error Supabase: ' + error.message, true);
-                            failureCallback(error);
-                            return;
-                        }
-
-                        reservasCache = (data || []).filter(r => r.estado !== 'cancelada');
+                        reservasCache = (resReservas.data || []).filter(r => r.estado !== 'cancelada');
+                        desayunosCache = resDesayunos.data || [];
                         actualizarKPIs(reservasCache);
 
                         const eventos = reservasCache.map(r => {
-                            const nombre = r.nombre_cliente || r.nombre || r.cliente || 'Cliente';
-                            const telefono = r.telefono_cliente || r.telefono || '';
-                            const areaSlug = obtenerSlugArea(r.area_evento || r.area);
-                            const personas = r.numero_personas || r.personas || r.pax || 1;
-                            const tipo = r.tipo_evento || r.tipo || 'evento';
-                            const fecha = r.fecha_reserva || r.fecha || (r.created_at ? r.created_at.split('T')[0] : new Date().toISOString().split('T')[0]);
-                            
-                            let rawHora = String(r.hora_reserva || r.hora || '12:00').trim();
-                            if (rawHora.length >= 5) {
-                                rawHora = rawHora.substring(0, 5);
+                            const nombre = r.nombre_cliente || 'Cliente';
+                            const personas = r.numero_personas || 1;
+                            const tipo = r.tipo_evento || 'evento';
+                            const fecha = r.fecha_reserva || new Date().toISOString().split('T')[0];
+                            let rawHora = String(r.hora_reserva || '12:00').substring(0, 5);
+
+                            function obtenerSlug(a) {
+                                const s = String(a || '').toLowerCase();
+                                if (s.includes('piscina')) return 'piscina';
+                                if (s.includes('salon') || s.includes('salón') || s.includes('cóndor')) return 'salon';
+                                if (s.includes('conferencia')) return 'conferencias';
+                                if (s.includes('terraza')) return 'terraza';
+                                return 'restorante';
                             }
-                            const startIso = `${fecha}T${rawHora}:00`;
 
                             return {
                                 id: String(r.id),
                                 title: `${String(tipo).toUpperCase()} (${personas}p) - ${nombre}`,
-                                start: startIso,
-                                className: `area-${areaSlug}`,
-                                extendedProps: {
-                                    ...r,
-                                    id: r.id,
-                                    nombre_cliente: nombre,
-                                    telefono_cliente: telefono,
-                                    area_evento: areaSlug,
-                                    numero_personas: personas,
-                                    tipo_evento: tipo,
-                                    fecha_reserva: fecha,
-                                    hora_reserva: rawHora
-                                }
+                                start: `${fecha}T${rawHora}:00`,
+                                className: `area-${obtenerSlug(r.area_evento)}`,
+                                extendedProps: { ...r, id: r.id }
                             };
                         });
 
                         successCallback(eventos);
                     } catch (err) {
-                        console.error('Excepción al consultar eventos:', err);
                         successCallback([]);
                     }
                 }
@@ -658,9 +599,9 @@
 
             calendar.render();
 
+            // Guardar Reserva
             document.getElementById('reservaForm').addEventListener('submit', async function(e) {
                 e.preventDefault();
-
                 const btn = document.getElementById('btnGuardarReserva');
                 btn.disabled = true;
 
@@ -677,45 +618,51 @@
                 };
 
                 try {
-                    if (!supabase) {
-                        if (idReserva) {
-                            const event = calendar.getEventById(idReserva);
-                            if (event) event.remove();
-                        }
-                        const newId = idReserva || String(Date.now());
-                        calendar.addEvent({
-                            id: newId,
-                            title: `${datosReserva.tipo_evento.toUpperCase()} (${datosReserva.numero_personas}p) - ${datosReserva.nombre_cliente}`,
-                            start: `${datosReserva.fecha_reserva}T${datosReserva.hora_reserva}:00`,
-                            className: `area-${datosReserva.area_evento}`,
-                            extendedProps: { ...datosReserva, id: newId }
-                        });
-                        
-                        mostrarNotificacion('¡Evento guardado localmente!');
-                        cerrarModal();
-                        return;
+                    let res;
+                    if (idReserva) {
+                        res = await supabase.from('reservas').update(datosReserva).eq('id', idReserva);
+                    } else {
+                        res = await supabase.from('reservas').insert([datosReserva]);
                     }
 
-                    let res;
-if (idReserva) {
-    res = await supabase.from('reservas').update(datosReserva).eq('id', idReserva);
-} else {
-    res = await supabase.from('reservas').insert([datosReserva]);
-}
-
-console.log("Respuesta de Supabase:", res); // <- Esto te dirá exactamente qué campo falló
-
-if (res.error) {
-    mostrarNotificacion('Error Supabase: ' + res.error.message, true);
-} else {
-    mostrarNotificacion(idReserva ? '¡Evento modificado!' : '¡Evento registrado!');
-    cerrarModal();
-    calendar.refetchEvents();
-}
+                    if (res.error) {
+                        mostrarNotificacion('Error Supabase: ' + res.error.message, true);
+                    } else {
+                        mostrarNotificacion(idReserva ? '¡Evento modificado!' : '¡Evento registrado!');
+                        cerrarModal();
+                        calendar.refetchEvents();
+                    }
                 } catch (err) {
-                    mostrarNotificacion('Ocurrió un error inesperado al guardar.', true);
+                    mostrarNotificacion('Error inesperado al guardar.', true);
                 } finally {
                     btn.disabled = false;
+                }
+            });
+
+            // Guardar Desayuno Diario
+            document.getElementById('desayunoForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const datosDesayuno = {
+                    fecha: document.getElementById('desayuno_fecha').value,
+                    proyeccion: parseInt(document.getElementById('desayuno_proyeccion').value) || 0,
+                    salida: parseInt(document.getElementById('desayuno_salida').value) || 0,
+                    adicionales: parseInt(document.getElementById('desayuno_adicionales').value) || 0
+                };
+
+                try {
+                    // Upsert basado en fecha para actualizar si ya existe el registro diario
+                    const { error } = await supabase.from('desayunos').upsert([datosDesayuno], { onConflict: 'fecha' });
+                    if (error) {
+                        mostrarNotificacion('Error al guardar desayunos: ' + error.message, true);
+                    } else {
+                        mostrarNotificacion('¡Control de desayunos guardado!');
+                        cerrarModalDesayunos();
+                        // Refrescar caché de desayunos
+                        const { data } = await supabase.from('desayunos').select('*');
+                        desayunosCache = data || [];
+                    }
+                } catch (err) {
+                    mostrarNotificacion('Error inesperado al guardar desayunos.', true);
                 }
             });
         });
@@ -737,7 +684,6 @@ if (res.error) {
             document.getElementById('tipo_evento').value = data.tipo_evento;
             document.getElementById('fecha_reserva').value = data.fecha_reserva;
             document.getElementById('hora_reserva').value = data.hora_reserva;
-
             document.getElementById('modalTitulo').innerText = '✏️ Editar / Eliminar Evento';
             document.getElementById('txtBtnGuardar').innerText = 'Guardar Cambios';
             document.getElementById('btnEliminarReserva').classList.remove('hidden');
@@ -747,32 +693,13 @@ if (res.error) {
         window.eliminarReservaActual = async function() {
             const idReserva = document.getElementById('reserva_id').value;
             if (!idReserva) return;
-
-            const btn = document.getElementById('btnEliminarReserva');
-            btn.disabled = true;
-
-            try {
-                if (!supabase) {
-                    const event = calendar.getEventById(idReserva);
-                    if (event) event.remove();
-                    mostrarNotificacion('Evento eliminado localmente');
-                    cerrarModal();
-                    return;
-                }
-
-                const { error } = await supabase.from('reservas').delete().eq('id', idReserva);
-
-                if (error) {
-                    mostrarNotificacion('Error al eliminar: ' + error.message, true);
-                } else {
-                    mostrarNotificacion('¡Evento eliminado exitosamente!');
-                    cerrarModal();
-                    calendar.refetchEvents();
-                }
-            } catch (err) {
-                mostrarNotificacion('Error inesperado al eliminar', true);
-            } finally {
-                btn.disabled = false;
+            const { error } = await supabase.from('reservas').delete().eq('id', idReserva);
+            if (error) {
+                mostrarNotificacion('Error al eliminar: ' + error.message, true);
+            } else {
+                mostrarNotificacion('¡Evento eliminado exitosamente!');
+                cerrarModal();
+                calendar.refetchEvents();
             }
         };
 
@@ -780,6 +707,17 @@ if (res.error) {
             document.getElementById('modalReserva').classList.add('hidden');
             document.getElementById('reservaForm').reset();
             document.getElementById('reserva_id').value = '';
+        };
+
+        window.abrirModalDesayunos = function() {
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('desayuno_fecha').value = hoy;
+            document.getElementById('modalDesayunos').classList.remove('hidden');
+        };
+
+        window.cerrarModalDesayunos = function() {
+            document.getElementById('modalDesayunos').classList.add('hidden');
+            document.getElementById('desayunoForm').reset();
         };
 
         window.abrirModalListado = function() {
@@ -797,53 +735,40 @@ if (res.error) {
 
         window.cambiarTipoFiltroListado = function() {
             const tipo = document.getElementById('filtro_periodo_tipo').value;
-            const contenedorMes = document.getElementById('contenedorMesEspecifico');
-            if (tipo === 'mes_especifico') {
-                contenedorMes.classList.remove('hidden');
-            } else {
-                contenedorMes.classList.add('hidden');
-            }
+            document.getElementById('contenedorMesEspecifico').classList.toggle('hidden', tipo !== 'mes_especifico');
             generarListadoReservas();
         };
 
         window.generarListadoReservas = function() {
             const tipoFiltro = document.getElementById('filtro_periodo_tipo').value;
             const tablaBody = document.getElementById('tablaListadoBody');
+            const tablaDesayunosBody = document.getElementById('tablaDesayunosBody');
             const subtitulo = document.getElementById('subtituloPeriodo');
             
             let listaFiltrada = [];
+            let desayunosFiltrados = [];
             const hoy = new Date();
+
+            let inicioPeriodo, finPeriodo;
 
             if (tipoFiltro === 'semana') {
                 const diaSemana = hoy.getDay();
                 const diffLunes = hoy.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1);
-                
-                const inicioSemana = new Date(hoy.setDate(diffLunes));
-                inicioSemana.setHours(0,0,0,0);
-                
-                const finSemana = new Date(inicioSemana);
-                finSemana.setDate(inicioSemana.getDate() + 6);
-                finSemana.setHours(23,59,59,999);
+                inicioPeriodo = new Date(hoy.setDate(diffLunes));
+                inicioPeriodo.setHours(0,0,0,0);
+                finPeriodo = new Date(inicioPeriodo);
+                finPeriodo.setDate(inicioPeriodo.getDate() + 6);
+                finPeriodo.setHours(23,59,59,999);
 
-                subtitulo.innerText = `SEMANA: ${formatearFechaCorta(inicioSemana)} AL ${formatearFechaCorta(finSemana)}`;
-
-                listaFiltrada = reservasCache.filter(r => {
-                    if (!r.fecha_reserva) return false;
-                    const f = new Date(r.fecha_reserva + 'T00:00:00');
-                    return f >= inicioSemana && f <= finSemana;
-                });
+                subtitulo.innerText = `SEMANA: ${formatearFechaCorta(inicioPeriodo)} AL ${formatearFechaCorta(finPeriodo)}`;
 
             } else if (tipoFiltro === 'mes_actual') {
                 const yyyy = hoy.getFullYear();
                 const mm = hoy.getMonth();
-                
-                subtitulo.innerText = `MES ACTUAL: ${obtenerNombreMes(mm).toUpperCase()} ${yyyy}`;
+                inicioPeriodo = new Date(yyyy, mm, 1);
+                finPeriodo = new Date(yyyy, mm + 1, 0, 23, 59, 59);
 
-                listaFiltrada = reservasCache.filter(r => {
-                    if (!r.fecha_reserva) return false;
-                    const f = new Date(r.fecha_reserva + 'T00:00:00');
-                    return f.getFullYear() === yyyy && f.getMonth() === mm;
-                });
+                subtitulo.innerText = `MES ACTUAL: ${obtenerNombreMes(mm).toUpperCase()} ${yyyy}`;
 
             } else if (tipoFiltro === 'mes_especifico') {
                 const val = document.getElementById('filtro_mes_input').value;
@@ -851,65 +776,89 @@ if (res.error) {
                 const partes = val.split('-');
                 const yyyy = parseInt(partes[0]);
                 const mm = parseInt(partes[1]) - 1;
+                inicioPeriodo = new Date(yyyy, mm, 1);
+                finPeriodo = new Date(yyyy, mm + 1, 0, 23, 59, 59);
 
                 subtitulo.innerText = `PERÍODO: ${obtenerNombreMes(mm).toUpperCase()} ${yyyy}`;
-
-                listaFiltrada = reservasCache.filter(r => {
-                    if (!r.fecha_reserva) return false;
-                    const f = new Date(r.fecha_reserva + 'T00:00:00');
-                    return f.getFullYear() === yyyy && f.getMonth() === mm;
-                });
             }
 
-            listaFiltrada.sort((a, b) => {
-                const fechaA = `${a.fecha_reserva}T${a.hora_reserva}`;
-                const fechaB = `${b.fecha_reserva}T${b.hora_reserva}`;
-                return fechaA.localeCompare(fechaB);
+            // Filtrar Reservas
+            listaFiltrada = reservasCache.filter(r => {
+                if (!r.fecha_reserva) return false;
+                const f = new Date(r.fecha_reserva + 'T00:00:00');
+                return f >= inicioPeriodo && f <= finPeriodo;
             });
 
+            listaFiltrada.sort((a, b) => `${a.fecha_reserva}T${a.hora_reserva}`.localeCompare(`${b.fecha_reserva}T${b.hora_reserva}`));
+
+            // Filtrar Desayunos
+            desayunosFiltrados = desayunosCache.filter(d => {
+                if (!d.fecha) return false;
+                const f = new Date(d.fecha + 'T00:00:00');
+                return f >= inicioPeriodo && f <= finPeriodo;
+            });
+
+            desayunosFiltrados.sort((a, b) => a.fecha.localeCompare(b.fecha));
+
+            // Renderizar Tabla de Eventos
             tablaBody.innerHTML = '';
             let totalPersonas = 0;
-
             if (listaFiltrada.length === 0) {
-                tablaBody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="p-4 text-center text-stone-500 font-semibold italic">
-                            No hay reservas o eventos registrados para este período.
-                        </td>
-                    </tr>
-                `;
+                tablaBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-stone-500 font-semibold italic">No hay reservas registradas para este período.</td></tr>`;
             } else {
-                const nombresAreaFormateados = {
-                    'restorante': 'Restorante',
-                    'terraza': 'Terraza',
-                    'piscina': 'Piscina / Pizzería',
-                    'salon': 'Salón de Fiesta Cóndor',
-                    'conferencias': 'Sala de Conferencias'
-                };
-
                 listaFiltrada.forEach(r => {
                     totalPersonas += parseInt(r.numero_personas || 0);
-                    const slug = obtenerSlugArea(r.area_evento);
-                    const nombreAreaFormatted = nombresAreaFormateados[slug] || r.area_evento || 'Restorante';
-
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-stone-50 border-b border-stone-200';
                     row.innerHTML = `
                         <td class="p-2.5 font-bold text-stone-900 border border-stone-200">${r.fecha_reserva} <span class="text-[#556B2F] font-semibold">(${r.hora_reserva})</span></td>
                         <td class="p-2.5 font-semibold text-stone-800 border border-stone-200">${r.nombre_cliente}</td>
                         <td class="p-2.5 text-stone-700 border border-stone-200">${r.telefono_cliente}</td>
-                        <td class="p-2.5 border border-stone-200 font-bold">${nombreAreaFormatted}</td>
+                        <td class="p-2.5 border border-stone-200 font-bold">${r.area_evento}</td>
                         <td class="p-2.5 capitalize border border-stone-200">${String(r.tipo_evento || 'Evento').replace('_', ' ')}</td>
                         <td class="p-2.5 text-center font-bold text-[#556B2F] border border-stone-200">${r.numero_personas}</td>
                     `;
                     tablaBody.appendChild(row);
                 });
             }
+            document.getElementById('totalEventosText').innerText = `${listaFiltrada.length} evento${listaFiltrada.length !== 1 ? 's' : ''}`;
+            document.getElementById('totalPersonasText').innerText = `${totalPersonas} personas`;
 
-            const totalEvtEl = document.getElementById('totalEventosText');
-            const totalPaxEl = document.getElementById('totalPersonasText');
-            if (totalEvtEl) totalEvtEl.innerText = `${listaFiltrada.length} evento${listaFiltrada.length !== 1 ? 's' : ''}`;
-            if (totalPaxEl) totalPaxEl.innerText = `${totalPersonas} personas`;
+            // Renderizar Tabla de Desayunos
+            tablaDesayunosBody.innerHTML = '';
+            let tProy = 0, tSal = 0, tAdic = 0, tGen = 0;
+
+            if (desayunosFiltrados.length === 0) {
+                tablaDesayunosBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-stone-500 font-semibold italic">No hay registros de desayunos para este período.</td></tr>`;
+            } else {
+                desayunosFiltrados.forEach(d => {
+                    const proy = parseInt(d.proyeccion || 0);
+                    const sal = parseInt(d.salida || 0);
+                    const adic = parseInt(d.adicionales || 0);
+                    const totalDia = proy + sal + adic;
+
+                    tProy += proy;
+                    tSal += sal;
+                    tAdic += adic;
+                    tGen += totalDia;
+
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-stone-50 border-b border-stone-200 text-center';
+                    row.innerHTML = `
+                        <td class="p-2.5 font-bold text-stone-900 border border-stone-200 text-left">${d.fecha}</td>
+                        <td class="p-2.5 border border-stone-200">${proy}</td>
+                        <td class="p-2.5 border border-stone-200">${sal}</td>
+                        <td class="p-2.5 border border-stone-200">${adic}</td>
+                        <td class="p-2.5 border border-stone-200 font-bold text-amber-900 bg-amber-50/50">${totalDia}</td>
+                    `;
+                    tablaDesayunosBody.appendChild(row);
+                });
+            }
+
+            document.getElementById('totalProyectadosText').innerText = tProy;
+            document.getElementById('totalSalientesText').innerText = tSal;
+            document.getElementById('totalAdicionalesText').innerText = tAdic;
+            document.getElementById('totalGeneralDesayunosText').innerText = tGen;
         };
 
         window.imprimirListado = function() {
@@ -917,25 +866,16 @@ if (res.error) {
         };
 
         function formatearFechaCorta(fecha) {
-            const dd = String(fecha.getDate()).padStart(2, '0');
-            const mm = String(fecha.getMonth() + 1).padStart(2, '0');
-            const yyyy = fecha.getFullYear();
-            return `${dd}/${mm}/${yyyy}`;
+            return `${String(fecha.getDate()).padStart(2, '0')}/${String(fecha.getMonth() + 1).padStart(2, '0')}/${fecha.getFullYear()}`;
         }
 
-        function obtenerNombreMes(numeroMes) {
-            const meses = [
-                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-            ];
-            return meses[numeroMes] || '';
+        function obtenerNombreMes(n) {
+            return ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'][n] || '';
         }
 
         function mostrarNotificacion(mensaje, esError = false) {
             const toast = document.createElement('div');
-            toast.className = `fixed bottom-5 right-5 z-50 text-white font-bold px-5 py-3 rounded-xl shadow-2xl transition-all duration-300 max-w-sm ${
-                esError ? 'bg-red-700 border-2 border-white/50' : 'bg-[#556B2F] border-2 border-white/40'
-            }`;
+            toast.className = `fixed bottom-5 right-5 z-50 text-white font-bold px-5 py-3 rounded-xl shadow-2xl transition-all duration-300 max-w-sm ${esError ? 'bg-red-700' : 'bg-[#556B2F]'}`;
             toast.innerText = mensaje;
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 4000);
