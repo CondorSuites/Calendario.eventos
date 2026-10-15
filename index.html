@@ -247,13 +247,14 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
+                        <!-- Área del Evento corregida con los valores exactos -->
                         <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Área del Evento *</label>
                         <select id="area_evento" required class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
-                            <option value="restorante">Restorante (Máx 50p)</option>
-                            <option value="terraza">Terraza (Máx 50p)</option>
-                            <option value="piscina">Piscina / Pizzería (Máx 30p)</option>
-                            <option value="salon">Salón de Fiesta Cóndor (Máx 70p)</option>
-                            <option value="conferencias">Sala de Conferencias (Máx 20p)</option>
+                            <option value="Restorante">Restorante (Máx 50p)</option>
+                            <option value="Terraza">Terraza (Máx 50p)</option>
+                            <option value="Piscina">Piscina / Pizzería (Máx 30p)</option>
+                            <option value="Salón de Fiesta Cóndor">Salón de Fiesta Cóndor (Máx 70p)</option>
+                            <option value="Sala de Conferencias">Sala de Conferencias (Máx 20p)</option>
                         </select>
                     </div>
                     <div>
@@ -265,21 +266,21 @@
                 <div>
                     <label class="block text-xs font-bold uppercase text-[#3B4A20] mb-1">Tipo de Evento *</label>
                     <select id="tipo_evento" required class="w-full p-2.5 bg-white border border-stone-300 rounded-xl text-xs font-semibold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#556B2F]">
-                        <option value="cumpleanos">🎉 Cumpleaños</option>
-                        <option value="bautizo">✝️ Bautizo</option>
-                        <option value="reunion_corporativa">💼 Reunión Corporativa</option>
-                        <option value="boda_civil">💍 Boda Civil</option>
-                        <option value="graduacion">🎓 Graduación</option>
-                        <option value="primera comunion">✝️ Primera Comunión</option>
-                        <option value="fiesta navideña">🎄 Fiesta Navideña</option>
-                        <option value="fiesta fin de año">🎄 Fiesta Fin de Año</option>
-                        <option value="dia de las madre">💝 Día de las Madres</option>
-                        <option value="dia del padre">👨 Día del Padre</option>
-                        <option value="carnaval">🎭 Carnaval</option>
-                        <option value="evento especial">✨ Evento Especial</option>
-                        <option value="aniversario">🎂 Aniversario</option>
-                        <option value="revelacion de genero">🍼 Revelación de Género</option>
-                        <option value="otro">✨ Otro Evento</option>
+                        <option value="Cumpleaños">🎉 Cumpleaños</option>
+                        <option value="Bautizo">✝️ Bautizo</option>
+                        <option value="Reunión Corporativa">💼 Reunión Corporativa</option>
+                        <option value="Boda Civil">💍 Boda Civil</option>
+                        <option value="Graduación">🎓 Graduación</option>
+                        <option value="Primera Comunión">✝️ Primera Comunión</option>
+                        <option value="Fiesta Navideña">🎄 Fiesta Navideña</option>
+                        <option value="Fiesta Fin de Año">🎄 Fiesta Fin de Año</option>
+                        <option value="Día de las Madres">💝 Día de las Madres</option>
+                        <option value="Día del Padre">👨 Día del Padre</option>
+                        <option value="Carnaval">🎭 Carnaval</option>
+                        <option value="Evento Especial">✨ Evento Especial</option>
+                        <option value="Aniversario">🎂 Aniversario</option>
+                        <option value="Revelación de Género">🍼 Revelación de Género</option>
+                        <option value="Otro Evento">✨ Otro Evento</option>
                     </select>
                 </div>
 
@@ -395,18 +396,18 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2bmZ2cnFkY2R5ZnZneWx1anB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2MDM3OTIsImV4cCI6MjEwNjE3OTc5Mn0.6YwUvCjANuDd_stKo3uxHiFZuWtVYI1E20vxICa80Ic';      
 
         const CAPACIDADES_MAXIMAS = {
-            'restorante': 50,
-            'terraza': 50,
-            'piscina': 30,
-            'salon': 70,
-            'conferencias': 20
+            'Restorante': 50,
+            'Terraza': 50,
+            'Piscina': 30,
+            'Salón de Fiesta Cóndor': 70,
+            'Sala de Conferencias': 20
         };
 
         function obtenerSlugArea(areaRaw) {
             if (!areaRaw) return 'restorante';
             const str = String(areaRaw).toLowerCase().trim();
-            if (str.includes('piscina') || str.includes('pizzeria')) return 'piscina';
-            if (str.includes('condor') || str.includes('salon') || str.includes('salón')) return 'salon';
+            if (str.includes('piscina') || str.includes('pizzería')) return 'piscina';
+            if (str.includes('cóndor') || str.includes('condor') || str.includes('salón') || str.includes('salon')) return 'salon';
             if (str.includes('conferencia')) return 'conferencias';
             if (str.includes('terraza')) return 'terraza';
             if (str.includes('restorante') || str.includes('restaurante')) return 'restorante';
@@ -570,9 +571,9 @@
                         id: info.event.id,
                         nombre_cliente: props.nombre_cliente || '',
                         telefono_cliente: props.telefono_cliente || '',
-                        area_evento: obtenerSlugArea(props.area_evento),
+                        area_evento: props.area_evento || 'Restorante',
                         numero_personas: props.numero_personas || 10,
-                        tipo_evento: props.tipo_evento || 'cumpleanos',
+                        tipo_evento: props.tipo_evento || 'Cumpleaños',
                         fecha_reserva: props.fecha_reserva || info.event.startStr.split('T')[0],
                         hora_reserva: props.hora_reserva || (info.event.startStr.split('T')[1] ? info.event.startStr.split('T')[1].substring(0,5) : '12:00')
                     });
@@ -584,9 +585,9 @@
                             const demoProps = {
                                 nombre_cliente: 'Cliente Demo',
                                 telefono_cliente: '0414-0000000',
-                                area_evento: 'salon',
+                                area_evento: 'Salón de Fiesta Cóndor',
                                 numero_personas: 20,
-                                tipo_evento: 'cumpleanos',
+                                tipo_evento: 'Cumpleaños',
                                 fecha_reserva: demoFecha,
                                 hora_reserva: '14:00'
                             };
@@ -617,9 +618,10 @@
                         const eventos = reservasCache.map(r => {
                             const nombre = r.nombre_cliente || r.nombre || r.cliente || 'Cliente';
                             const telefono = r.telefono_cliente || r.telefono || '';
-                            const areaSlug = obtenerSlugArea(r.area_evento || r.area);
+                            const areaVal = r.area_evento || r.area || 'Restorante';
+                            const areaSlug = obtenerSlugArea(areaVal);
                             const personas = r.numero_personas || r.personas || r.pax || 1;
-                            const tipo = r.tipo_evento || r.tipo || 'evento';
+                            const tipo = r.tipo_evento || r.tipo || 'Evento';
                             const fecha = r.fecha_reserva || r.fecha || (r.created_at ? r.created_at.split('T')[0] : new Date().toISOString().split('T')[0]);
                             
                             let rawHora = String(r.hora_reserva || r.hora || '12:00').trim();
@@ -630,7 +632,7 @@
 
                             return {
                                 id: String(r.id),
-                                title: `${tipo.toUpperCase()} (${personas}p) - ${nombre}`,
+                                title: `${String(tipo).toUpperCase()} (${personas}p) - ${nombre}`,
                                 start: startIso,
                                 className: `area-${areaSlug}`,
                                 extendedProps: {
@@ -638,7 +640,7 @@
                                     id: r.id,
                                     nombre_cliente: nombre,
                                     telefono_cliente: telefono,
-                                    area_evento: areaSlug,
+                                    area_evento: areaVal,
                                     numero_personas: personas,
                                     tipo_evento: tipo,
                                     fecha_reserva: fecha,
@@ -686,7 +688,7 @@
                             id: newId,
                             title: `${datosReserva.tipo_evento.toUpperCase()} (${datosReserva.numero_personas}p) - ${datosReserva.nombre_cliente}`,
                             start: `${datosReserva.fecha_reserva}T${datosReserva.hora_reserva}:00`,
-                            className: `area-${datosReserva.area_evento}`,
+                            className: `area-${obtenerSlugArea(datosReserva.area_evento)}`,
                             extendedProps: { ...datosReserva, id: newId }
                         });
                         
@@ -695,7 +697,12 @@
                         return;
                     }
 
-                    const res = await guardarEnSupabase(idReserva, datosReserva);
+                    let res;
+                    if (idReserva) {
+                        res = await supabase.from('reservas').update(datosReserva).eq('id', idReserva);
+                    } else {
+                        res = await supabase.from('reservas').insert([datosReserva]);
+                    }
 
                     if (res.error) {
                         mostrarNotificacion('Error Supabase: ' + res.error.message, true);
@@ -711,81 +718,6 @@
                 }
             });
         });
-
-        async function guardarEnSupabase(idReserva, datosReserva) {
-            const keyTipo = datosReserva.tipo_evento;
-            const keyArea = datosReserva.area_evento;
-            
-            const MAPPING_TIPOS = {
-                cumpleanos: ['Cumpleaños', 'cumpleaños', 'Cumpleanos', 'cumpleanos', 'CUMPLEAÑOS'],
-                bautizo: ['Bautizo', 'bautizo', 'BAUTIZO'],
-                reunion_corporativa: ['Reunión Corporativa', 'Reunion Corporativa', 'reunion_corporativa', 'reunion corporativa'],
-                boda_civil: ['Boda Civil', 'Boda civil', 'boda_civil', 'boda civil'],
-                graduacion: ['Graduación', 'Graduacion', 'graduación', 'graduacion'],
-                otro: ['Otro', 'otro', 'Otro Evento', 'otro_evento']
-            };
-
-            const MAPPING_AREAS = {
-                restorante: ['restorante', 'Restorante', 'Restaurante', 'restaurante'],
-                terraza: ['terraza', 'Terraza'],
-                piscina: ['piscina', 'Piscina'],
-                salon: ['salon', 'Salon', 'Salón', 'salón']
-            };
-
-            const selectTipo = document.getElementById('tipo_evento');
-            const textoTipoRaw = selectTipo ? selectTipo.options[selectTipo.selectedIndex].text : '';
-            const textoTipoLimpio = textoTipoRaw.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '').trim();
-
-            const selectArea = document.getElementById('area_evento');
-            const textoAreaRaw = selectArea ? selectArea.options[selectArea.selectedIndex].text : '';
-            const textoAreaLimpio = textoAreaRaw.trim();
-
-            const variantesTipos = [...new Set([
-                ...(MAPPING_TIPOS[keyTipo] || []),
-                keyTipo,
-                textoTipoLimpio,
-                'Otro', 'otro'
-            ])].filter(Boolean);
-
-            const variantesAreas = [...new Set([
-                keyArea,
-                ...(MAPPING_AREAS[keyArea] || []),
-                textoAreaLimpio,
-                textoAreaLimpio.toLowerCase()
-            ])].filter(Boolean);
-
-            let ultimoResultado = null;
-
-            for (const varArea of variantesAreas) {
-                for (const varTipo of variantesTipos) {
-                    const payload = { 
-                        ...datosReserva, 
-                        tipo_evento: varTipo,
-                        area_evento: varArea
-                    };
-
-                    let res;
-                    if (idReserva) {
-                        res = await supabase.from('reservas').update(payload).eq('id', idReserva);
-                    } else {
-                        res = await supabase.from('reservas').insert([payload]);
-                    }
-
-                    if (!res.error) {
-                        return { error: null };
-                    }
-
-                    if (res.error.message.includes('check constraint')) {
-                        ultimoResultado = res;
-                        continue;
-                    } else {
-                        return res;
-                    }
-                }
-            }
-
-            return ultimoResultado;
-        }
 
         window.abrirModalNuevaReserva = function() {
             document.getElementById('reserva_id').value = '';
@@ -946,18 +878,9 @@
                     </tr>
                 `;
             } else {
-                const nombresArea = {
-                    'restorante': 'Restorante',
-                    'terraza': 'Terraza',
-                    'piscina': 'Piscina / Pizzería',
-                    'salon': 'Salón de Fiesta Cóndor',
-                    'conferencias': 'Sala de Conferencias'
-                };
-
                 listaFiltrada.forEach(r => {
                     totalPersonas += parseInt(r.numero_personas || 0);
-                    const slug = obtenerSlugArea(r.area_evento);
-                    const nombreAreaFormatted = nombresArea[slug] || r.area_evento || 'Restorante';
+                    const nombreAreaFormatted = r.area_evento || 'Restorante';
 
                     const row = document.createElement('tr');
                     row.className = 'hover:bg-stone-50 border-b border-stone-200';
@@ -966,7 +889,7 @@
                         <td class="p-2.5 font-semibold text-stone-800 border border-stone-200">${r.nombre_cliente}</td>
                         <td class="p-2.5 text-stone-700 border border-stone-200">${r.telefono_cliente}</td>
                         <td class="p-2.5 border border-stone-200 font-bold">${nombreAreaFormatted}</td>
-                        <td class="p-2.5 capitalize border border-stone-200">${(r.tipo_evento || 'Evento').replace('_', ' ')}</td>
+                        <td class="p-2.5 capitalize border border-stone-200">${String(r.tipo_evento || 'Evento').replace('_', ' ')}</td>
                         <td class="p-2.5 text-center font-bold text-[#556B2F] border border-stone-200">${r.numero_personas}</td>
                     `;
                     tablaBody.appendChild(row);
