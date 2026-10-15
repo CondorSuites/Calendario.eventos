@@ -206,9 +206,9 @@
                 <button onclick="abrirModalListado()" class="flex-1 sm:flex-none px-4 py-2.5 bg-stone-800 hover:bg-stone-950 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
                     📋 Listado / Imprimir
                 </button>
-                <button onclick="abrirModalDesayunos()" class="flex-1 sm:flex-none px-4 py-2.5 bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs uppercase tracking-wider rounded-full shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
-                    🥐 Control Desayunos
-                </button>
+                <button onclick="abrirModalDesayunos()" title="Control Diario de Desayunos" class="px-3 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-base rounded-full shadow-sm border border-amber-200/80 transition-all active:scale-95 flex items-center justify-center" aria-label="Control Diario de Desayunos">
+        🥐
+    </button>
                 <button onclick="abrirModalNuevaReserva()" class="flex-1 sm:flex-none px-5 py-2.5 bg-[#556B2F] hover:bg-[#3B4A20] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
                     ➕ Agendar Evento
                 </button>
@@ -444,7 +444,7 @@
                                     <td class="p-3 text-left border border-stone-300 font-serif-luxury text-xs uppercase tracking-wider">
                                         TOTAL GENERAL DESAYUNOS:
                                     </td>
-                                    <td class="p-3 border border-stone-300 font-bold text-stone-400 bg-amber-50">- (Estimado)</td>
+                                    <td id="totalProyectadosText" class="p-3 border border-stone-300 font-bold text-amber-900 bg-amber-50">0</td>
                                     <td id="totalSalientesText" class="p-3 border border-stone-300 font-bold text-amber-900 bg-amber-50">0</td>
                                     <td id="totalAdicionalesText" class="p-3 border border-stone-300 font-bold text-amber-900 bg-amber-50">0</td>
                                     <td id="totalGeneralDesayunosText" class="p-3 border border-stone-300 font-bold text-sm text-amber-900 bg-amber-100">0</td>
@@ -821,9 +821,9 @@
             document.getElementById('totalEventosText').innerText = `${listaFiltrada.length} evento${listaFiltrada.length !== 1 ? 's' : ''}`;
             document.getElementById('totalPersonasText').innerText = `${totalPersonas} personas`;
 
-            // Renderizar Tabla de Desayunos (Sin sumar proyectados en el total general)
+            // Renderizar Tabla de Desayunos (Total Día solo suma Salientes + Adicionales)
             tablaDesayunosBody.innerHTML = '';
-            let tSal = 0, tAdic = 0, tGen = 0;
+            let tProy = 0, tSal = 0, tAdic = 0, tGen = 0;
 
             if (desayunosFiltrados.length === 0) {
                 tablaDesayunosBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-stone-500 font-semibold italic">No hay registros de desayunos para este período.</td></tr>`;
@@ -832,8 +832,9 @@
                     const proy = parseInt(d.proyeccion || 0);
                     const sal = parseInt(d.salida || 0);
                     const adic = parseInt(d.adicionales || 0);
-                    const totalDia = proy + sal + adic;
+                    const totalDia = sal + adic; // Solo salientes + adicionales
 
+                    tProy += proy;
                     tSal += sal;
                     tAdic += adic;
                     tGen += totalDia;
@@ -851,6 +852,7 @@
                 });
             }
 
+            document.getElementById('totalProyectadosText').innerText = tProy;
             document.getElementById('totalSalientesText').innerText = tSal;
             document.getElementById('totalAdicionalesText').innerText = tAdic;
             document.getElementById('totalGeneralDesayunosText').innerText = tGen;
