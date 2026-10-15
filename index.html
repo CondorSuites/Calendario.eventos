@@ -115,26 +115,78 @@
             }
         }
 
-        /* Estilos de Impresión */
+        /* Estilos de Impresión Optimizados */
         @media print {
-            body * {
-                visibility: hidden !important;
-            }
-            #areaImpresion, #areaImpresion * {
-                visibility: visible !important;
-            }
-            #areaImpresion {
-                position: absolute !important;
-                left: 0 !important;
-                top: 0 !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 15px !important;
-                background: white !important;
-                color: black !important;
-            }
-            .no-print {
+            /* Ocultar elementos innecesarios */
+            body > *:not(#modalListado),
+            .no-print,
+            header,
+            main,
+            footer,
+            #modalReserva,
+            #modalDesayunos {
                 display: none !important;
+            }
+
+            /* Resetear contenedor principal y fondo */
+            body, html {
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+
+            /* Forzar que el modal tome el flujo de página estándar */
+            #modalListado {
+                position: static !important;
+                display: block !important;
+                background: transparent !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-shadow: none !important;
+                border: none !important;
+                overflow: visible !important;
+                height: auto !important;
+            }
+
+            #modalListado > div {
+                max-height: none !important;
+                height: auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
+            }
+
+            #areaImpresion {
+                position: static !important;
+                overflow: visible !important;
+                height: auto !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Reglas para evitar cortes feos de filas entre páginas */
+            tr {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            table {
+                page-break-after: auto !important;
+            }
+
+            thead {
+                display: table-header-group !important;
+            }
+
+            tfoot {
+                display: table-footer-group !important;
             }
         }
     </style>
@@ -202,13 +254,13 @@
             <h2 class="text-lg md:text-xl font-serif-luxury font-bold text-[#3B4A20] flex items-center gap-2">
                 🍷 Calendario de Reservas
             </h2>
-            <div class="flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto">
+            <div class="flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto items-center">
                 <button onclick="abrirModalListado()" class="flex-1 sm:flex-none px-4 py-2.5 bg-stone-800 hover:bg-stone-950 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
                     📋 Listado / Imprimir
                 </button>
                 <button onclick="abrirModalDesayunos()" title="Control Diario de Desayunos" class="px-3 py-2 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-base rounded-full shadow-sm border border-amber-200/80 transition-all active:scale-95 flex items-center justify-center" aria-label="Control Diario de Desayunos">
-        🥐
-    </button>
+                    🥐
+                </button>
                 <button onclick="abrirModalNuevaReserva()" class="flex-1 sm:flex-none px-5 py-2.5 bg-[#556B2F] hover:bg-[#3B4A20] text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-95 flex items-center justify-center gap-2">
                     ➕ Agendar Evento
                 </button>
@@ -821,7 +873,7 @@
             document.getElementById('totalEventosText').innerText = `${listaFiltrada.length} evento${listaFiltrada.length !== 1 ? 's' : ''}`;
             document.getElementById('totalPersonasText').innerText = `${totalPersonas} personas`;
 
-            // Renderizar Tabla de Desayunos (Total Día solo suma Salientes + Adicionales)
+            // Renderizar Tabla de Desayunos
             tablaDesayunosBody.innerHTML = '';
             let tProy = 0, tSal = 0, tAdic = 0, tGen = 0;
 
@@ -832,7 +884,7 @@
                     const proy = parseInt(d.proyeccion || 0);
                     const sal = parseInt(d.salida || 0);
                     const adic = parseInt(d.adicionales || 0);
-                    const totalDia = sal + adic; // Solo salientes + adicionales
+                    const totalDia = sal + adic;
 
                     tProy += proy;
                     tSal += sal;
