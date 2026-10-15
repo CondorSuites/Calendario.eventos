@@ -697,19 +697,21 @@
                     }
 
                     let res;
-                    if (idReserva) {
-                        res = await supabase.from('reservas').update(datosReserva).eq('id', idReserva);
-                    } else {
-                        res = await supabase.from('reservas').insert([datosReserva]);
-                    }
+if (idReserva) {
+    res = await supabase.from('reservas').update(datosReserva).eq('id', idReserva);
+} else {
+    res = await supabase.from('reservas').insert([datosReserva]);
+}
 
-                    if (res.error) {
-                        mostrarNotificacion('Error Supabase: ' + res.error.message, true);
-                    } else {
-                        mostrarNotificacion(idReserva ? '¡Evento modificado!' : '¡Evento registrado!');
-                        cerrarModal();
-                        calendar.refetchEvents();
-                    }
+console.log("Respuesta de Supabase:", res); // <- Esto te dirá exactamente qué campo falló
+
+if (res.error) {
+    mostrarNotificacion('Error Supabase: ' + res.error.message, true);
+} else {
+    mostrarNotificacion(idReserva ? '¡Evento modificado!' : '¡Evento registrado!');
+    cerrarModal();
+    calendar.refetchEvents();
+}
                 } catch (err) {
                     mostrarNotificacion('Ocurrió un error inesperado al guardar.', true);
                 } finally {
